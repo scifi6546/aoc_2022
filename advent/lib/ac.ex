@@ -15,6 +15,11 @@ defmodule AC do
   def hello do
     :world
   end
+  @doc """
+  First advent of code, takes in path of test input
+  iex> AC.one("./test/test_input/1")
+  24000
+  """
   def one(path) do
     AC.OneHelper.parse_file(path)
     |> Enum.reduce( 0,fn x,acc ->
@@ -51,7 +56,7 @@ defmodule AC.OneHelper do
     |> Enum.map(fn arr -> AC.OneHelper.to_sum_struct(arr)end)
   end
   def parse_int(s) do
-    {num,r} = Integer.parse(s)
+    {num,_} = Integer.parse(s)
         num
   end
   def parse_int_list(l) do
