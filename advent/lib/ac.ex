@@ -16,13 +16,7 @@ defmodule AC do
     :world
   end
   def one(path) do
-    AC.OneHelper.load_file(path) |> String.split("\n")
-    |> Enum.chunk_by(fn(x) -> x=="" end)
-    |> Enum.filter(fn x -> x != [""] end)
-    |> Enum.map(
-      fn arr -> AC.OneHelper.parse_int_list(arr)
-      end)
-    |> Enum.map(fn arr -> AC.OneHelper.to_sum_struct(arr)end)
+    AC.OneHelper.parse_file(path)
     |> Enum.reduce( 0,fn x,acc ->
       cond do
         x[:sum] > acc -> x[:sum]
@@ -30,9 +24,8 @@ defmodule AC do
       end
     end)
   end
-  def two(path) do
-    AC.OneHelper.load_file(path)
-      |> AC.OneHelper.parse_to_int_list()
+  def one_p2(path) do
+    AC.OneHelper.parse_file(path)
       |> Enum.map(fn x -> x[:sum] end)
       |> Enum.sort(fn x,y -> x >= y end)
       |> Enum.take(3)
@@ -40,11 +33,15 @@ defmodule AC do
   end
 end
 defmodule AC.OneHelper do
+  def parse_file(path) do
+    load_file(path)
+    |> parse_to_struct()
+  end
   def load_file(path) do
     {:ok,file_content} = File.read(path)
     file_content
   end
-  def parse_to_int_list(str) do
+  def parse_to_struct(str) do
     String.split(str, "\n")
     |> Enum.chunk_by(fn(x) -> x=="" end)
     |> Enum.filter(fn x -> x != [""] end)

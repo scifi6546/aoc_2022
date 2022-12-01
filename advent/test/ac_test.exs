@@ -5,7 +5,7 @@ defmodule ACTest do
     assert AC.one("./test/test_input/1") == 24000
   end
   test "advent 2" do
-    assert AC.two("./test/test_input/1") == 45000
+    assert AC.one_p2("./test/test_input/1") == 45000
   end
 
 end
