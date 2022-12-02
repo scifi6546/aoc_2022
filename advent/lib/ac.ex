@@ -114,29 +114,10 @@ defmodule AC.TwoHelper do
   """
   def process_play_p2(play) do
     cond do
-      play[:self] == "X" -> 0 + get_card_score(get_lose_hand(play))
-      play[:self] == "Y" -> 3 + get_card_score(get_draw_hand(play))
-      play[:self] == "Z" -> 6 + get_card_score(get_win_hand(play))
+      play[:self] == "X" -> 0 + get_card_score(CardTable.lose_map()[play[:opponent]])
+      play[:self] == "Y" -> 3 + get_card_score(CardTable.draw_map()[play[:opponent]])
+      play[:self] == "Z" -> 6 + get_card_score(CardTable.win_map()[play[:opponent]])
       true -> raise "invalid player hand"
-    end
-  end
-  defp get_lose_hand(play) do
-    cond do
-      play[:opponent] == :rock -> :scissors
-      play[:opponent] == :paper -> :rock
-      play[:opponent] == :scissors -> :paper
-      true -> raise "invalid opponent hand"
-    end
-  end
-  defp get_draw_hand(play) do
-    play[:opponent]
-  end
-  defp get_win_hand(play) do
-    cond do
-      play[:opponent] == :rock -> :paper
-      play[:opponent] == :paper -> :scissors
-      play[:opponent] == :scissors -> :rock
-      true -> raise "invalid opponent hand"
     end
   end
 
