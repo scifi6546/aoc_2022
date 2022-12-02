@@ -48,17 +48,83 @@ C Z
     |> Enum.filter(fn x -> String.length(x)!=0 end)
     |> Enum.map(fn line -> String.split(line) end)
     |> Enum.map(fn pair -> AC.TwoHelper.parse_line(pair) end)
-    |> Enum.map(fn play -> AC.TwoHelper.process_play(play) end)
+    |> Enum.map(fn play -> AC.TwoHelper.process_play_p1(play) end)
     |> Enum.sum()
   end
   def two_p1() do
     two_p1(two_test_input())
   end
+
+  def two_p2(input) do
+    String.split(input,"\n")
+    |> Enum.filter(fn x -> String.length(x)!=0 end)
+    |> Enum.map(fn line -> String.split(line) end)
+    |> Enum.map(fn pair -> AC.TwoHelper.parse_line(pair) end)
+    |> Enum.map(fn play -> AC.TwoHelper.process_play_p2(play) end)
+    |> Enum.sum()
+  end
+  def two_p2() do
+    two_p2(two_test_input())
+  end
 end
 defmodule AC.TwoHelper do
   def parse_line(line) do
-    %{opponent: hd(line), self: hd(tl(line))}
+    %{opponent: parse_card_code(hd(line)), self: hd(tl(line))}
   end
+  defp parse_card_code(char) do
+    cond do
+      char == "A" -> :rock
+      char == "B" -> :paper
+      char == "C" -> :scissors
+      true -> raise "invalid card"
+    end
+  end
+  defp get_card_value(card) do
+    cond do
+      card == :rock -> 1
+      card == :paper -> 2
+      card == :scissors -> 3
+      true -> raise "invalid opponent hand"
+    end
+  end
+   @doc """
+  gets score for given play according to new play system
+  iex> process_play(%{opponent: :rock, self: "Y"})
+  4
+  iex> process_play(%{opponent: :paper, self: "X"})
+  1
+  iex> process_play(%{opponent: :scissors, self: "Z"})
+  7
+  """
+  def process_play_p2(play) do
+    cond do
+      play[:self] == "X" -> 0 + get_card_score(get_lose_hand(play))
+      play[:self] == "Y" -> 3 + get_card_score(get_draw_hand(play))
+      play[:self] == "Z" -> 6 + get_card_score(get_win_hand(play))
+      true -> raise "invalid player hand"
+    end
+  end
+  defp get_lose_hand(play) do
+    cond do
+      play[:opponent] == :rock -> :scissors
+      play[:opponent] == :paper -> :rock
+      play[:opponent] == :scissors -> :paper
+      true -> raise "invalid opponent hand"
+    end
+  end
+  defp get_draw_hand(play) do
+    play[:opponent]
+  end
+  defp get_win_hand(play) do
+    cond do
+      play[:opponent] == :rock -> :paper
+      play[:opponent] == :paper -> :scissors
+      play[:opponent] == :scissors -> :rock
+      true -> raise "invalid opponent hand"
+    end
+  end
+
+
   @doc """
   gets score for given play
   iex> process_play(%{opponent: "A", self: "Y"})
@@ -68,12 +134,20 @@ defmodule AC.TwoHelper do
   iex> process_play(%{opponent: "C", self: "Z"})
   6
   """
-  def process_play(play) do
+  def process_play_p1(play) do
     cond do
-      play[:opponent] == "A" -> opp_a(play)
-      play[:opponent] == "B" -> opp_b(play)
-      play[:opponent] == "C" -> opp_c(play)
+      play[:opponent] == :rock -> opp_a(play)
+      play[:opponent] == :paper -> opp_b(play)
+      play[:opponent] == :scissors -> opp_c(play)
       true -> raise "invalid opponent move"
+    end
+  end
+  def get_card_score(card) do
+    cond do
+      card == :rock -> 1
+      card == :paper -> 2
+      card == :scissors -> 3
+      true -> raise "invalid card score"
     end
   end
   @doc """
