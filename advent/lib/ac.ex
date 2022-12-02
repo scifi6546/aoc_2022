@@ -48,6 +48,7 @@ C Z
     |> Enum.filter(fn x -> String.length(x)!=0 end)
     |> Enum.map(fn line -> String.split(line) end)
     |> Enum.map(fn pair -> AC.TwoHelper.parse_line(pair) end)
+    |> Enum.map(fn play -> AC.TwoHelper.parse_line_p1(play) end)
     |> Enum.map(fn play -> AC.TwoHelper.process_play_p1(play) end)
     |> Enum.sum()
   end
@@ -68,8 +69,23 @@ C Z
   end
 end
 defmodule AC.TwoHelper do
+  defmodule CardTable do
+    def win_map() do
+      %{rock: :paper, paper: :scissors, scissors: :rock}
+    end
+    def draw_map() do
+      %{rock: :rock, paper: :paper, scissors: :scissors}
+    end
+    def lose_map() do
+      %{rock: :scissors, paper: :rock, scissors: :paper}
+    end
+
+  end
   def parse_line(line) do
     %{opponent: parse_card_code(hd(line)), self: hd(tl(line))}
+  end
+  def parse_line_p1(play) do
+    %{opponent: play[:opponent], self: parse_card_code_self(play[:self])}
   end
   defp parse_card_code(char) do
     cond do
@@ -79,12 +95,12 @@ defmodule AC.TwoHelper do
       true -> raise "invalid card"
     end
   end
-  defp get_card_value(card) do
+  defp parse_card_code_self(char) do
     cond do
-      card == :rock -> 1
-      card == :paper -> 2
-      card == :scissors -> 3
-      true -> raise "invalid opponent hand"
+      char == "X" -> :rock
+      char == "Y" -> :paper
+      char == "Z" -> :scissors
+      true -> raise "invalid card"
     end
   end
    @doc """
@@ -135,11 +151,11 @@ defmodule AC.TwoHelper do
   6
   """
   def process_play_p1(play) do
-    cond do
-      play[:opponent] == :rock -> opp_a(play)
-      play[:opponent] == :paper -> opp_b(play)
-      play[:opponent] == :scissors -> opp_c(play)
-      true -> raise "invalid opponent move"
+  get_card_score(play[:self]) + cond do
+      CardTable.win_map()[play[:opponent]] == play[:self] -> 6
+      CardTable.draw_map()[play[:opponent]] == play[:self] -> 3
+      CardTable.lose_map()[play[:opponent]] == play[:self] -> 0
+      true -> raise "invalid play"
     end
   end
   def get_card_score(card) do
@@ -148,33 +164,6 @@ defmodule AC.TwoHelper do
       card == :paper -> 2
       card == :scissors -> 3
       true -> raise "invalid card score"
-    end
-  end
-  @doc """
-  Gets score if opponent played a
-  """
-  defp opp_a(play) do
-    cond do
-      play[:self] == "X" -> 1 + 3
-      play[:self] == "Y" -> 2 + 6
-      play[:self] == "Z" -> 3 + 0
-      true -> raise "invalid player move"
-    end
-  end
-  defp opp_b(play) do
-    cond do
-      play[:self] == "X" -> 1 + 0
-      play[:self] == "Y" -> 2 + 3
-      play[:self] == "Z" -> 3 + 6
-      true -> raise "invalid player move"
-    end
-  end
-  defp opp_c(play) do
-    cond do
-      play[:self] == "X" -> 1 + 6
-      play[:self] == "Y" -> 2 + 0
-      play[:self] == "Z" -> 3 + 3
-      true -> raise "invalid player move"
     end
   end
 end
