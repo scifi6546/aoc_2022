@@ -28,6 +28,7 @@ defmodule ACTest do
      assert AC.Three.split_line("aabb") == %{left: "aa", right: "bb"}
   end
   test "advent 3 find repeat" do
-    assert AC.Three.find_repeat(%{left: "asv2",right: "s1xl"}) == "s"
+    #assert AC.Three.find_repeat(%{left: "asv2",right: "s1xl"}) == "s"
+    assert AC.Three.find_repeat("asv2","s1sl") == "s"
  end
 end

@@ -14,13 +14,13 @@ CrZsJsPPZsGzwwsLwLmpwMDw
     157
   end
   def test_output_part2 do
-    :better
+    70
   end
   def problem1(input) do
     String.split(input,"\n")
     |> Enum.filter(fn x -> String.length(x)!=0 end)
     |> Enum.map(fn x -> split_line(x) end)
-    |> Enum.map(fn x -> find_repeat(x) end)
+    |> Enum.map(fn line_dict -> find_repeat(line_dict[:left], line_dict[:right]) end)
     |> Enum.map(fn x -> hd(String.to_charlist(x))end)
     |> Enum.map(fn x -> get_string_value(x) end)
     |> Enum.sum()
@@ -41,9 +41,12 @@ CrZsJsPPZsGzwwsLwLmpwMDw
       true -> raise "invalid char"
     end
   end
-  def find_repeat(input) do
-    right = String.to_charlist(input[:right])
-    String.to_charlist(input[:left])
+  @doc"""
+  Finds first repeating char in charlist
+  """
+  def find_repeat(left,right) do
+    right = String.to_charlist(right)
+    String.to_charlist(left)
     |> Enum.map(
       fn left_char ->
         Enum.map(right,
