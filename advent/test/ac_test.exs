@@ -14,22 +14,9 @@ defmodule ACTest do
 
     assert AC.One.problem2() == AC.One.test_output_part2()
   end
-  test "advent 2p1" do
-    input =
-"""
-A Y
-B X
-C Z
-"""
-    assert AC.two_p1(input) == 15
-  end
-  test "advent 2p2" do
-    input =
-"""
-A Y
-B X
-C Z
-"""
-    assert AC.two_p2(input) == 12
+  test "advent 2" do
+    assert AC.Two.problem1() == AC.Two.test_output_part1()
+
+    assert AC.Two.problem2() == AC.Two.test_output_part2()
   end
 end
