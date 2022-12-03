@@ -19,4 +19,15 @@ defmodule ACTest do
 
     assert AC.Two.problem2() == AC.Two.test_output_part2()
   end
+  test "advent 3" do
+    assert AC.Three.problem1() == AC.Three.test_output_part1()
+
+    assert AC.Three.problem2() == AC.Three.test_output_part2()
+  end
+  test "advent 3 split line" do
+     assert AC.Three.split_line("aabb") == %{left: "aa", right: "bb"}
+  end
+  test "advent 3 find repeat" do
+    assert AC.Three.find_repeat(%{left: "asv2",right: "s1xl"}) == "s"
+ end
 end
