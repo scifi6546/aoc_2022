@@ -1,11 +1,18 @@
 defmodule ACTest do
   use ExUnit.Case
   doctest AC
-  test "advent 1" do
-    assert AC.one("./test/test_input/1") == 24000
+  test "test module" do
+    test_output = AC.TestProblem.test_input()
+    assert AC.TestProblem.problem1() == AC.TestProblem.test_output_part1()
+    assert AC.TestProblem.problem1(test_output) == AC.TestProblem.test_output_part1()
+
+    assert AC.TestProblem.problem2() == AC.TestProblem.test_output_part2()
+    assert AC.TestProblem.problem2(test_output) == AC.TestProblem.test_output_part2()
   end
-  test "advent 1p2" do
-    assert AC.one_p2("./test/test_input/1") == 45000
+  test "advent 1" do
+    assert AC.One.problem1() == AC.One.test_output_part1()
+
+    assert AC.One.problem2() == AC.One.test_output_part2()
   end
   test "advent 2p1" do
     input =

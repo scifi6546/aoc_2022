@@ -1,41 +1,67 @@
+defmodule ProblemReq do
+  @doc """
+  input that AOC gives you
+  """
+  @callback test_input() :: String
+  @doc """
+  input that AOC gives you for part 1
+  """
+  @callback test_output_part1() :: String
+
+   @doc """
+  input that AOC gives you for part 2
+  """
+  @callback test_output_part2() :: String
+  @callback problem1(input :: String) :: any
+  @callback problem2(input :: String) :: any
+
+end
+defmodule Problem do
+  defmacro __using__(_opts) do
+    quote do          # <--
+      import Problem     # <--
+      @behaviour ProblemReq
+      def problem1() do
+        problem1(
+          test_input()
+        )
+      end
+
+      def problem2() do
+        problem2(
+          test_input()
+        )
+      end
+
+    end               # <--
+  end
+
+end
+defmodule AC.TestProblem do
+  use Problem
+  def test_input() do
+    "Hi there!"
+  end
+  def test_output_part1 do
+    :good
+  end
+  def test_output_part2 do
+    :better
+  end
+  def problem1(_input) do
+    :good
+  end
+
+  def problem2(_input) do
+    :better
+  end
+end
 defmodule AC do
+
   @moduledoc """
   Documentation for `AC`.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> AC.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
-  @doc """
-  First advent of code, takes in path of test input
-  iex> AC.one("./test/test_input/1")
-  24000
-  """
-  def one(path) do
-    AC.OneHelper.parse_file(path)
-    |> Enum.reduce( 0,fn x,acc ->
-      cond do
-        x[:sum] > acc -> x[:sum]
-        true -> acc
-      end
-    end)
-  end
-  def one_p2(path) do
-    AC.OneHelper.parse_file(path)
-      |> Enum.map(fn x -> x[:sum] end)
-      |> Enum.sort(fn x,y -> x >= y end)
-      |> Enum.take(3)
-      |> Enum.sum()
-  end
   def two_test_input() do
 """
 A Y
@@ -149,20 +175,6 @@ defmodule AC.TwoHelper do
   end
 end
 defmodule AC.OneHelper do
-  def parse_file(path) do
-    GeneralHelpers.load_file(path)
-    |> parse_to_struct()
-  end
-
-  def parse_to_struct(str) do
-    String.split(str, "\n")
-    |> Enum.chunk_by(fn(x) -> x=="" end)
-    |> Enum.filter(fn x -> x != [""] end)
-    |> Enum.map(
-      fn arr -> AC.OneHelper.parse_int_list(arr)
-      end)
-    |> Enum.map(fn arr -> AC.OneHelper.to_sum_struct(arr)end)
-  end
   def parse_int(s) do
     {num,_} = Integer.parse(s)
     num
@@ -172,9 +184,7 @@ defmodule AC.OneHelper do
       parse_int(x)
     end)
   end
-  def to_sum_struct(foods) do
-    %{sum: Enum.sum(foods),elements: foods}
-  end
+
   defmodule FoodSum do
     defstruct sum: 0, elements: []
   end
