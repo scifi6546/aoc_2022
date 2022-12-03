@@ -30,5 +30,9 @@ defmodule ACTest do
   test "advent 3 find repeat" do
     #assert AC.Three.find_repeat(%{left: "asv2",right: "s1xl"}) == "s"
     assert AC.Three.find_repeat("asv2","s1sl") == "s"
- end
+  end
+  test "advent 3 list to string" do
+    #assert AC.Three.find_repeat(%{left: "asv2",right: "s1xl"}) == "s"
+      AC.Three.list_to_string(["a","b","cd"]) == "abcd"
+    end
 end

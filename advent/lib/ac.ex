@@ -71,17 +71,6 @@ C Z
   end
 
 end
-defmodule AC.TwoHelper do
-
-
-
-
-
-
-
-
-
-end
 defmodule GeneralHelpers do
   def load_file(path) do
     {:ok,file_content} = File.read(path)
