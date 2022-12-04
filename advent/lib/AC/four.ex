@@ -17,7 +17,7 @@ defmodule AC.Four do
   end
 
   def test_output_part2 do
-    :better
+    4
   end
 
   def problem1(input) do
@@ -77,7 +77,22 @@ defmodule AC.Four do
     %{start: hd(s_list), end: hd(tl(s_list))}
   end
 
-  def problem2(_input) do
-    :better
+  def problem2(input) do
+    String.split(input, "\n")
+    |> Enum.filter(fn line -> String.length(line) != 0 end)
+    |> Enum.map(fn line -> String.split(line, ",") end)
+    |> Enum.map(fn line -> to_range_pair(line) end)
+    |> Enum.map(fn {a, b} -> range_contains_any_overlap(a, b) end)
+    |> Enum.filter(fn a -> a end)
+    |> Enum.count()
+  end
+
+  def range_contains_any_overlap(a, b) do
+    range_contains_num(a, b[:start]) || range_contains_num(a, b[:end]) ||
+      range_contains_num(b, a[:start]) || range_contains_num(b, a[:end])
+  end
+
+  def range_contains_num(range, num) do
+    range[:start] <= num && range[:end] >= num
   end
 end
