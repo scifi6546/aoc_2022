@@ -64,11 +64,16 @@ defmodule AC do
   @moduledoc """
   Documentation for `AC`.
   """
-end
-
-defmodule GeneralHelpers do
+  @doc """
+  Loads a file into a string
+  """
+  @spec load_file(String) :: String
   def load_file(path) do
     {:ok, file_content} = File.read(path)
     file_content
   end
+end
+
+defmodule GeneralHelpers do
+
 end

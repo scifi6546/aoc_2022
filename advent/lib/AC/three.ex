@@ -97,10 +97,6 @@ defmodule AC.Three do
   """
   @spec find_repeat_many([String]) :: [String]
   def find_repeat_many(strings) do
-    first = hd(strings)
-    # next = tl(strings)
-    # Enum.zip(strings,next)
-    # |> Enum.map(fn {l,r} -> find_repeat_list(l,r)end)
     Enum.reduce(strings, hd(strings), fn x, acc -> list_to_string(find_repeat_all(x, acc)) end)
   end
 
