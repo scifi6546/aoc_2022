@@ -42,4 +42,14 @@ defmodule ACTest do
     # assert AC.Three.find_repeat(%{left: "asv2",right: "s1xl"}) == "s"
     assert AC.Three.list_to_string(["a", "b", "cd"]) == "abcd"
   end
+
+  test "advent 4" do
+    assert AC.Four.problem1() == AC.Four.test_output_part1()
+
+    assert AC.Four.problem2() == AC.Four.test_output_part2()
+  end
+
+  test "advent 4 range" do
+    assert AC.Four.to_range("5-6") == %{start: 5, end: 6}
+  end
 end
