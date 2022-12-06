@@ -52,4 +52,10 @@ defmodule ACTest do
   test "advent 4 range" do
     assert AC.Four.to_range("5-6") == %{start: 5, end: 6}
   end
+
+  test "advent 5" do
+    assert AC.Five.problem1() == AC.Five.test_output_part1()
+
+    assert AC.Five.problem2() == AC.Five.test_output_part2()
+  end
 end

@@ -27,20 +27,35 @@ defmodule Problem do
         problem1(test_input())
       end
 
+      def problem1_timed(input) do
+        Problem.timed_fun(input, fn input -> problem1(input) end)
+      end
+
       def problem2() do
         problem2(test_input())
+      end
+
+      def problem2_timed(input) do
+        Problem.timed_fun(input, fn input -> problem2(input) end)
       end
     end
 
     # <--
   end
+
+  def timed_fun(input, fun) do
+    t_start = Time.utc_now()
+    output = fun.(input)
+    t_end = Time.utc_now()
+    %{output: output, time_ms: Time.diff(t_end, t_start, :microsecond) / 1000.0}
+  end
 end
 
 defmodule AC.TestProblem do
   use Problem
-
+  @spec test_input() :: String
   def test_input() do
-    "Hi there!"
+    "Hi there"
   end
 
   def test_output_part1 do
@@ -75,5 +90,4 @@ defmodule AC do
 end
 
 defmodule GeneralHelpers do
-
 end
