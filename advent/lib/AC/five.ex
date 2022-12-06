@@ -1,6 +1,6 @@
 defmodule AC.Five do
   use Problem
-
+  @spec test_input :: String
   def test_input() do
     """
         [D]
