@@ -21,6 +21,7 @@ defmodule AC.Six do
     problem_runner(input, 14)
   end
 
+  @spec problem_runner(binary, Integer) :: Integer
   def problem_runner(input, num_letters) do
     String.graphemes(input)
     |> trailing_iter(num_letters)
