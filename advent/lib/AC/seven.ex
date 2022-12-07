@@ -48,14 +48,22 @@ defmodule AC.Seven do
   end
 
   def get_directory_sizes(file_tree) do
-    Map.keys(file_tree)
-    |> Enum.reduce(file_tree, fn x, file_tree ->
-      IO.inspect(file_tree)
-      file_tree
-    end)
-  end
+    if Map.has_key?(file_tree, :files) do
+      Map.update!(file_tree, :files, fn existing_files ->
+        IO.inspect(existing_files)
+        new_tree = existing_files
 
-  defp get_directory_sizes_recurse() do
+        new_tree =
+          Enum.reduce(Map.keys(existing_files), %{}, fn key, acc ->
+            get_directory_sizes(existing_files[key])
+            Map.put(acc, key, get_directory_sizes(existing_files[key]))
+          end)
+
+        Map.update(new_tree, :size, 0, fn exist -> "already set, old: #{exist}" end)
+      end)
+    else
+      file_tree
+    end
   end
 
   defp run_commands(commands) do
@@ -99,11 +107,16 @@ defmodule AC.Seven do
     IO.puts("current file tree")
     IO.inspect(file_tree)
 
-    Map.update!(file_tree, :files, fn files ->
-      Enum.reduce(command[:data], files, fn add_file, file_acc ->
-        update_file_tree(file_acc, file_tree[:current_directory], add_file)
+    file_tree =
+      Map.update!(file_tree, :files, fn files ->
+        Enum.reduce(command[:data], files, fn add_file, file_acc ->
+          update_file_tree(file_acc, file_tree[:current_directory], add_file)
+        end)
       end)
-    end)
+
+    IO.puts("file tree after ls")
+    IO.inspect(file_tree)
+    file_tree
   end
 
   defp update_file_tree(file_tree, parent_path, file) do
@@ -114,12 +127,26 @@ defmodule AC.Seven do
 
     cond do
       Enum.count(parent_path) > 0 ->
-        Map.update!(file_tree, hd(parent_path), fn dir ->
-          update_file_tree(dir, tl(parent_path), file)
+        Map.update!(file_tree, :files, fn dir_map ->
+          Map.update!(dir_map, hd(parent_path), fn dir ->
+            IO.puts("sub update file tree current dir: ")
+            IO.inspect(dir)
+            update_file_tree(dir, tl(parent_path), file)
+          end)
         end)
 
       Enum.count(parent_path) == 0 ->
-        place_files(file_tree, file)
+        IO.puts("putting file, #{file[:name]}")
+        IO.inspect(file_tree)
+
+        map =
+          Map.update(file_tree, :files, place_files(%{}, file), fn existing_tree ->
+            place_files(existing_tree, file)
+          end)
+
+        IO.puts("right after update")
+        IO.inspect(map)
+        map
 
       true ->
         raise "invalid state"
@@ -127,19 +154,25 @@ defmodule AC.Seven do
   end
 
   defp place_files(file_tree, file) do
-    IO.puts("file tree: ")
+    IO.puts("at place_file tree: ")
     IO.inspect(file_tree)
+    IO.inspect(file)
 
-    cond do
-      file[:type] == :directory ->
-        Map.put(file_tree, file[:name], %{type: :directory})
+    file_tree =
+      cond do
+        file[:type] == :directory ->
+          Map.put(file_tree, file[:name], %{type: :directory})
 
-      file[:type] == :file ->
-        Map.put(file_tree, file[:name], %{type: :file, size: file[:size]})
+        file[:type] == :file ->
+          Map.put(file_tree, file[:name], %{type: :file, size: file[:size]})
 
-      true ->
-        raise "invalid file type"
-    end
+        true ->
+          raise "invalid file type"
+      end
+
+    IO.puts("file tree after place_files")
+    IO.inspect(file_tree)
+    file_tree
   end
 
   defp handle_command(s) do
