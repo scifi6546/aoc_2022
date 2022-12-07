@@ -49,7 +49,10 @@ defmodule AC.Seven do
 
   def get_directory_sizes(file_tree) do
     Map.keys(file_tree)
-    |> Enum.reduce(file_tree, fn x, file_tree -> file_tree end)
+    |> Enum.reduce(file_tree, fn x, file_tree ->
+      IO.inspect(file_tree)
+      file_tree
+    end)
   end
 
   defp get_directory_sizes_recurse() do
