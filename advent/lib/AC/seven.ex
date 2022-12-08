@@ -30,12 +30,12 @@ defmodule AC.Seven do
   end
 
   def test_output_part1 do
-    "95437"
+    95437
   end
 
   @spec test_output_part2 :: :better
   def test_output_part2 do
-    :better
+    24_933_642
   end
 
   def problem1(input) do
@@ -45,22 +45,67 @@ defmodule AC.Seven do
     |> run_commands()
     |> Map.get(:files)
     |> get_directory_sizes()
+    |> list_directory_sizes()
+    |> Enum.map(fn {size, _name} -> size end)
+    |> Enum.filter(fn size -> size <= 100_000 end)
+    |> Enum.sum()
+  end
+
+  def problem2(input) do
+    files =
+      String.split(input, "$")
+      |> Enum.filter(fn s -> String.length(s) != 0 end)
+      |> Enum.map(fn s -> handle_command(s) end)
+      |> run_commands()
+      |> Map.get(:files)
+      |> get_directory_sizes()
+
+    directory_sizes = list_directory_sizes(files)
+
+    size = files[:size]
+    available_space = 70_000_000
+    needed_space = 30_000_000
+
+    extra_space = needed_space - (available_space - size)
+
+    Enum.map(directory_sizes, fn {size, _name} -> size end)
+    |> Enum.filter(fn size -> size >= extra_space end)
+    |> Enum.min()
+  end
+
+  def get_root_size(file_tree) do
+    Enum.map(file_tree, fn {name, val} -> {name, val} end)
+  end
+
+  def list_directory_sizes(file_tree) do
+    Enum.flat_map(file_tree[:files], fn {file_name, file} ->
+      if file[:type] == :directory do
+        [{file[:size], file_name}] ++ list_directory_sizes(file)
+      else
+        []
+      end
+    end)
   end
 
   def get_directory_sizes(file_tree) do
     if Map.has_key?(file_tree, :files) do
-      Map.update!(file_tree, :files, fn existing_files ->
-        IO.inspect(existing_files)
-        new_tree = existing_files
+      new_map = Map.update(file_tree, :size, 0, fn _size -> 0 end)
 
-        new_tree =
+      new_tree =
+        Map.update!(new_map, :files, fn existing_files ->
           Enum.reduce(Map.keys(existing_files), %{}, fn key, acc ->
             get_directory_sizes(existing_files[key])
             Map.put(acc, key, get_directory_sizes(existing_files[key]))
           end)
+        end)
 
-        Map.update(new_tree, :size, 0, fn exist -> "already set, old: #{exist}" end)
-      end)
+      size =
+        Enum.map(Map.keys(new_tree[:files]), fn file_key ->
+          new_tree[:files][file_key][:size]
+        end)
+        |> Enum.sum()
+
+      Map.put(new_tree, :size, size)
     else
       file_tree
     end
@@ -76,7 +121,6 @@ defmodule AC.Seven do
     Enum.reduce(tl(commands), initial_tree, fn command, acc ->
       cond do
         command[:command] == "cd" ->
-          IO.inspect(command)
           run_cd(acc, command)
 
         command[:command] == "ls" ->
@@ -101,52 +145,26 @@ defmodule AC.Seven do
   end
 
   defp run_ls(file_tree, command) do
-    IO.puts("running ls")
-    IO.puts("current command")
-    IO.inspect(command)
-    IO.puts("current file tree")
-    IO.inspect(file_tree)
-
-    file_tree =
-      Map.update!(file_tree, :files, fn files ->
-        Enum.reduce(command[:data], files, fn add_file, file_acc ->
-          update_file_tree(file_acc, file_tree[:current_directory], add_file)
-        end)
+    Map.update!(file_tree, :files, fn files ->
+      Enum.reduce(command[:data], files, fn add_file, file_acc ->
+        update_file_tree(file_acc, file_tree[:current_directory], add_file)
       end)
-
-    IO.puts("file tree after ls")
-    IO.inspect(file_tree)
-    file_tree
+    end)
   end
 
   defp update_file_tree(file_tree, parent_path, file) do
-    IO.puts("update_file")
-    IO.inspect(parent_path)
-    IO.inspect(file)
-    IO.inspect(file_tree)
-
     cond do
       Enum.count(parent_path) > 0 ->
         Map.update!(file_tree, :files, fn dir_map ->
           Map.update!(dir_map, hd(parent_path), fn dir ->
-            IO.puts("sub update file tree current dir: ")
-            IO.inspect(dir)
             update_file_tree(dir, tl(parent_path), file)
           end)
         end)
 
       Enum.count(parent_path) == 0 ->
-        IO.puts("putting file, #{file[:name]}")
-        IO.inspect(file_tree)
-
-        map =
-          Map.update(file_tree, :files, place_files(%{}, file), fn existing_tree ->
-            place_files(existing_tree, file)
-          end)
-
-        IO.puts("right after update")
-        IO.inspect(map)
-        map
+        Map.update(file_tree, :files, place_files(%{}, file), fn existing_tree ->
+          place_files(existing_tree, file)
+        end)
 
       true ->
         raise "invalid state"
@@ -154,25 +172,16 @@ defmodule AC.Seven do
   end
 
   defp place_files(file_tree, file) do
-    IO.puts("at place_file tree: ")
-    IO.inspect(file_tree)
-    IO.inspect(file)
+    cond do
+      file[:type] == :directory ->
+        Map.put(file_tree, file[:name], %{type: :directory})
 
-    file_tree =
-      cond do
-        file[:type] == :directory ->
-          Map.put(file_tree, file[:name], %{type: :directory})
+      file[:type] == :file ->
+        Map.put(file_tree, file[:name], %{type: :file, size: file[:size]})
 
-        file[:type] == :file ->
-          Map.put(file_tree, file[:name], %{type: :file, size: file[:size]})
-
-        true ->
-          raise "invalid file type"
-      end
-
-    IO.puts("file tree after place_files")
-    IO.inspect(file_tree)
-    file_tree
+      true ->
+        raise "invalid file type"
+    end
   end
 
   defp handle_command(s) do
@@ -215,9 +224,5 @@ defmodule AC.Seven do
     else
       {:file, String.to_integer(str)}
     end
-  end
-
-  def problem2(_input) do
-    :better
   end
 end
