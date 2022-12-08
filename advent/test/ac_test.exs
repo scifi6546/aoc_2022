@@ -65,12 +65,6 @@ defmodule ACTest do
     assert AC.Six.problem2() == AC.Six.test_output_part2()
   end
 
-  test "advent 7" do
-    assert AC.Seven.problem1() == AC.Seven.test_output_part1()
-
-    assert AC.Seven.problem2() == AC.Seven.test_output_part2()
-  end
-
   test "advent 6 part1 additional data" do
     assert AC.Six.problem1("bvwbjplbgvbhsrlpgdmjqwftvncz") == 5
     assert AC.Six.problem1("nppdvjthqldpwncqszvftbrmjlhg") == 6
@@ -83,5 +77,17 @@ defmodule ACTest do
     assert AC.Six.problem2("nppdvjthqldpwncqszvftbrmjlhg") == 23
     assert AC.Six.problem2("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg") == 29
     assert AC.Six.problem2("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw") == 26
+  end
+
+  test "advent 7" do
+    assert AC.Seven.problem1() == AC.Seven.test_output_part1()
+
+    assert AC.Seven.problem2() == AC.Seven.test_output_part2()
+  end
+
+  test "advent 8" do
+    assert AC.Eight.problem1() == AC.Eight.test_output_part1()
+
+    assert AC.Eight.problem2() == AC.Eight.test_output_part2()
   end
 end
