@@ -79,14 +79,14 @@ defmodule AC.Nine do
   end
 
   def test_output_part2 do
-    :better
+    36
   end
 
   def problem1(input) do
     String.split(input, "\n")
     |> Enum.filter(fn line -> String.length(line) != 0 end)
     |> Enum.map(fn line ->
-      {letter, _space, num} = String.graphemes(line) |> List.to_tuple()
+      {letter, num} = String.split(line) |> List.to_tuple()
       num = String.to_integer(num)
 
       cond do
@@ -105,11 +105,15 @@ defmodule AC.Nine do
 
       Map.put(acc, :tail, tail_position)
       |> Map.update!(:tail_visited, fn vis -> vis ++ [tail_position] end)
-      |> Map.update!(:head, fn head_pos -> new_head_pos end)
+      |> Map.put(:head, new_head_pos)
     end)
     |> Map.get(:tail_visited)
     |> Enum.uniq()
     |> Enum.count()
+  end
+
+  def problem2(_input) do
+    :better
   end
 
   def apply_ins(ins, pos) do
@@ -128,7 +132,6 @@ defmodule AC.Nine do
     end
   end
 
-  def problem2(_input) do
-    :better
+  def follow_ins(ins, head, tail) do
   end
 end

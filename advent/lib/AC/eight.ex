@@ -49,7 +49,7 @@ defmodule AC.Eight do
   end
 
   def test_output_part2 do
-    :better
+    8
   end
 
   def problem1(input) do
