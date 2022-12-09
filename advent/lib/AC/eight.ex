@@ -1,5 +1,38 @@
 defmodule AC.Eight do
   use Problem
+
+  defmodule Grid do
+    @spec zip([Any], Any) :: Any
+    def zip(grids, map_fn) do
+      Enum.map(grids, fn grid -> Tuple.to_list(grid) end)
+      |> Enum.zip()
+      |> Enum.map(fn row ->
+        Tuple.to_list(row)
+        |> Enum.map(fn row -> Tuple.to_list(row) end)
+        |> Enum.zip()
+        |> Enum.map(fn item -> map_fn.(item) end)
+        |> List.to_tuple()
+      end)
+      |> List.to_tuple()
+    end
+
+    def max(grid) do
+      Tuple.to_list(grid)
+      |> Enum.map(fn row -> Tuple.to_list(row) |> Enum.max() end)
+      |> Enum.max()
+    end
+
+    def to_string(grid) do
+      Tuple.to_list(grid)
+      |> Enum.map(fn row ->
+        Tuple.to_list(row)
+        |> Enum.map(fn x -> Integer.to_string(x) end)
+        |> Enum.reduce("", fn x, acc -> acc <> " " <> x end)
+      end)
+      |> Enum.reduce(fn x, acc -> acc <> "\n" <> x end)
+    end
+  end
+
   @spec test_input() :: String
   def test_input() do
     """
@@ -46,6 +79,102 @@ defmodule AC.Eight do
     end)
     |> Enum.map(fn row -> Enum.sum(row) end)
     |> Enum.sum()
+  end
+
+  def problem2(input) do
+    grid = grid_from_string(input)
+
+    l_r =
+      grid_iter_rows(grid)
+      |> Enum.map(fn row -> get_row_left_dist(row) end)
+      |> grid_from_rows()
+
+    r_l =
+      grid_iter_rows(grid)
+      |> Enum.map(fn row -> get_row_right_dist(row) end)
+      |> grid_from_rows()
+
+    u_d = get_u_dist(grid)
+    d_u = get_d_dist(grid)
+
+    Grid.zip([l_r, r_l, u_d, d_u], fn x_tuple -> Tuple.to_list(x_tuple) |> Enum.product() end)
+    # |> Grid.max()
+    # {l_r, r_l, u_d, d_u}
+  end
+
+  def grid_from_string(input) do
+    String.split(input, "\n")
+    |> Enum.filter(fn s -> String.length(s) != 0 end)
+    |> Enum.map(fn s -> String.graphemes(s) end)
+    |> Enum.map(fn row -> list_to_ints(row) end)
+    |> Enum.map(fn row -> List.to_tuple(row) end)
+    |> List.to_tuple()
+  end
+
+  def get_u_dist(grid) do
+    grid_iter_cols(grid)
+    |> Enum.map(fn col -> get_row_left_dist(col) end)
+    |> cols_to_grid()
+  end
+
+  def get_d_dist(grid) do
+    grid_iter_cols(grid)
+    |> Enum.map(fn col -> get_row_right_dist(col) end)
+    |> cols_to_grid()
+  end
+
+  def grid_iter_rows(grid) do
+    Tuple.to_list(grid)
+  end
+
+  def grid_iter_cols(grid) do
+    x_size = get_x_size(grid)
+    Enum.map(AC.range(0, x_size), fn x -> get_grid_col(grid, x) end)
+  end
+
+  def cols_to_grid(cols) do
+    grid = List.to_tuple(cols)
+    Enum.map(0..(get_x_size(grid) - 1), fn x -> get_grid_col(grid, x) end) |> List.to_tuple()
+  end
+
+  def grid_from_rows(grid) do
+    List.to_tuple(grid)
+  end
+
+  def get_row_right_dist(row) do
+    Tuple.to_list(row)
+    |> Enum.reverse()
+    |> List.to_tuple()
+    |> get_row_left_dist()
+    |> Tuple.to_list()
+    |> Enum.reverse()
+    |> List.to_tuple()
+  end
+
+  def get_row_left_dist(row) do
+    Enum.map(0..(tuple_size(row) - 1), fn i ->
+      Enum.map(AC.range(0, i), fn j -> %{i: i, j: j, elem: elem(row, j)} end)
+      |> Enum.reverse()
+      |> Enum.reduce(%{largest: elem(row, i), current_distance: i, in_shadow: false}, fn x, acc ->
+        cond do
+          acc[:in_shadow] == false && x[:elem] >= acc[:largest] ->
+            Map.put(acc, :largest, x[:elem])
+            |> Map.put(:current_distance, i - x[:j])
+            |> Map.put(:in_shadow, true)
+
+          acc[:in_shadow] == true && x[:elem] > acc[:largest] ->
+            Map.put(acc, :largest, x[:elem])
+            |> Map.put(:current_distance, i - x[:j])
+
+          true ->
+            acc
+        end
+      end)
+      |> Map.get(:current_distance)
+
+      # |> Map.get(:current_distance)
+    end)
+    |> List.to_tuple()
   end
 
   def compare_rows(rows) do
@@ -163,9 +292,5 @@ defmodule AC.Eight do
 
   defp list_to_ints(char_list) do
     Enum.map(char_list, fn char -> String.to_integer(char) end)
-  end
-
-  def problem2(_input) do
-    :better
   end
 end

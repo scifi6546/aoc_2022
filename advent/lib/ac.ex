@@ -80,6 +80,14 @@ defmodule AC do
   Documentation for `AC`.
   """
   @doc """
+  takes range from start to end, non inclusive
+  """
+  @spec range(integer, integer) :: list
+  def range(start, range_end) do
+    Enum.take(start..range_end, range_end - start)
+  end
+
+  @doc """
   Loads a file into a string
   """
   @spec load_file(String) :: String
