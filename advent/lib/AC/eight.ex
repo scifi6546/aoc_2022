@@ -98,7 +98,8 @@ defmodule AC.Eight do
     d_u = get_d_dist(grid)
 
     Grid.zip([l_r, r_l, u_d, d_u], fn x_tuple -> Tuple.to_list(x_tuple) |> Enum.product() end)
-    # |> Grid.max()
+    |> Grid.max()
+
     # {l_r, r_l, u_d, d_u}
   end
 
@@ -168,6 +169,13 @@ defmodule AC.Eight do
 
           true ->
             acc
+        end
+
+        if x[:elem] >= acc[:largest] do
+          Map.put(acc, :current_distance, i - x[:j])
+          |> Map.put(:largest, 9999)
+        else
+          acc
         end
       end)
       |> Map.get(:current_distance)
