@@ -90,4 +90,10 @@ defmodule ACTest do
 
     assert AC.Eight.problem2() == AC.Eight.test_output_part2()
   end
+
+  test "advent 9" do
+    assert AC.Nine.problem1() == AC.Nine.test_output_part1()
+
+    assert AC.Nine.problem2() == AC.Nine.test_output_part2()
+  end
 end
