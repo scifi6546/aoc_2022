@@ -96,4 +96,8 @@ defmodule ACTest do
 
     assert AC.Nine.problem2() == AC.Nine.test_output_part2()
   end
+
+  test "advent large input" do
+    assert AC.Nine.problem2(AC.Nine.large_input()) == 36
+  end
 end
