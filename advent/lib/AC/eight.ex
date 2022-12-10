@@ -16,6 +16,29 @@ defmodule AC.Eight do
       |> List.to_tuple()
     end
 
+    def num_rows(grid) do
+      tuple_size(grid)
+    end
+
+    def num_cols(grid) do
+      tuple_size(elem(grid, 0))
+    end
+
+    @spec map_rows(tuple, any) :: tuple
+    def map_rows(grid, fun) do
+      Enum.map(0..(num_rows(grid) - 1), fn i ->
+        row = elem(grid, i)
+        fun.(row)
+      end)
+      |> List.to_tuple()
+    end
+
+    def map_cols(grid, fun) do
+      Enum.map(0..(num_cols(grid) - 1), fn x ->
+        Enum.map(0..(num_rows(grid) - 1), fn y -> y end)
+      end)
+    end
+
     def max(grid) do
       Tuple.to_list(grid)
       |> Enum.map(fn row -> Tuple.to_list(row) |> Enum.max() end)
@@ -234,15 +257,11 @@ defmodule AC.Eight do
   end
 
   def get_l_r_vis_grid(grid) do
-    Enum.map(0..(get_y_size(grid) - 1), fn y -> get_grid_row(grid, y) end)
-    |> Enum.map(fn row -> row_visible_l_to_r(row) end)
-    |> List.to_tuple()
+    Grid.map_rows(grid, fn row -> row_visible_l_to_r(row) end)
   end
 
   def get_r_l_vis_grid(grid) do
-    Enum.map(0..(get_y_size(grid) - 1), fn y -> get_grid_row(grid, y) end)
-    |> Enum.map(fn row -> row_visible_r_to_l(row) end)
-    |> List.to_tuple()
+    Grid.map_rows(grid, fn row -> row_visible_r_to_l(row) end)
   end
 
   @doc """
