@@ -1,0 +1,225 @@
+defmodule AC.Ten do
+  use Problem
+  @spec test_input() :: String
+  def test_input() do
+    """
+    addx 15
+    addx -11
+    addx 6
+    addx -3
+    addx 5
+    addx -1
+    addx -8
+    addx 13
+    addx 4
+    noop
+    addx -1
+    addx 5
+    addx -1
+    addx 5
+    addx -1
+    addx 5
+    addx -1
+    addx 5
+    addx -1
+    addx -35
+    addx 1
+    addx 24
+    addx -19
+    addx 1
+    addx 16
+    addx -11
+    noop
+    noop
+    addx 21
+    addx -15
+    noop
+    noop
+    addx -3
+    addx 9
+    addx 1
+    addx -3
+    addx 8
+    addx 1
+    addx 5
+    noop
+    noop
+    noop
+    noop
+    noop
+    addx -36
+    noop
+    addx 1
+    addx 7
+    noop
+    noop
+    noop
+    addx 2
+    addx 6
+    noop
+    noop
+    noop
+    noop
+    noop
+    addx 1
+    noop
+    noop
+    addx 7
+    addx 1
+    noop
+    addx -13
+    addx 13
+    addx 7
+    noop
+    addx 1
+    addx -33
+    noop
+    noop
+    noop
+    addx 2
+    noop
+    noop
+    noop
+    addx 8
+    noop
+    addx -1
+    addx 2
+    addx 1
+    noop
+    addx 17
+    addx -9
+    addx 1
+    addx 1
+    addx -3
+    addx 11
+    noop
+    noop
+    addx 1
+    noop
+    addx 1
+    noop
+    noop
+    addx -13
+    addx -19
+    addx 1
+    addx 3
+    addx 26
+    addx -30
+    addx 12
+    addx -1
+    addx 3
+    addx 1
+    noop
+    noop
+    noop
+    addx -9
+    addx 18
+    addx 1
+    addx 2
+    noop
+    noop
+    addx 9
+    noop
+    noop
+    noop
+    addx -1
+    addx 2
+    addx -37
+    addx 1
+    addx 3
+    noop
+    addx 15
+    addx -21
+    addx 22
+    addx -6
+    addx 1
+    noop
+    addx 2
+    addx 1
+    noop
+    addx -10
+    noop
+    noop
+    addx 20
+    addx 1
+    addx 2
+    addx 2
+    addx -6
+    addx -11
+    noop
+    noop
+    noop
+    """
+  end
+
+  def test_output_part1 do
+    13140
+  end
+
+  @spec test_output_part2 :: :better
+  def test_output_part2 do
+    :better
+  end
+
+  def problem1(input) do
+    String.split(input, "\n")
+    |> Enum.filter(fn line -> String.length(line) != 0 end)
+    |> Enum.map(fn line -> parse_instruction(line) end)
+    |> Enum.flat_map_reduce(default_state(), fn ins, acc ->
+      new_state = run_instruction(acc, ins)
+      {new_state, List.last(new_state)}
+    end)
+    |> elem(0)
+    |> Enum.filter(fn state -> filter_cycle(state[:cycle_num]) end)
+    |> Enum.map(fn state -> state[:cycle_num] * state[:x_register] end)
+    |> Enum.sum()
+  end
+
+  def filter_cycle(cycle_num) do
+    if cycle_num < 40 do
+      cycle_num == 20
+    else
+      rem(cycle_num - 20, 40) == 0
+    end
+  end
+
+  def default_state() do
+    %{x_register: 1, cycle_num: 1}
+  end
+
+  @doc """
+  Runs given instruction and returns updated state
+  """
+  def run_instruction(state, ins) do
+    cond do
+      ins[:operation] == :addx ->
+        [
+          Map.update!(state, :cycle_num, fn c -> c + 1 end),
+          Map.update!(state, :x_register, fn x_reg -> x_reg + ins[:value] end)
+          |> Map.update!(:cycle_num, fn c -> c + 2 end)
+        ]
+
+      ins[:operation] == :noop ->
+        [Map.update!(state, :cycle_num, fn c -> c + 1 end)]
+    end
+  end
+
+  def parse_instruction(line) do
+    arg_list = String.split(line)
+
+    fun =
+      cond do
+        hd(arg_list) == "addx" -> :addx
+        hd(arg_list) == "noop" -> :noop
+      end
+
+    cond do
+      fun == :addx -> %{operation: fun, value: String.to_integer(hd(tl(arg_list)))}
+      fun == :noop -> %{operation: fun}
+    end
+  end
+
+  def problem2(_input) do
+    :better
+  end
+end
