@@ -46,10 +46,23 @@ defmodule AC.Eleven do
     |> Enum.map(fn mon -> parse_monkey(mon) end)
     |> List.to_tuple()
     |> run_n_rounds(20)
-    |> parse_monkey_list()
     |> Enum.split(-1)
-    |> elem(0)
-    |> get_counts()
+    |> elem(1)
+    |> hd()
+    |> Tuple.to_list()
+    |> Enum.map(fn monkey -> monkey[:num_inspected] end)
+    |> Enum.sort()
+    |> Enum.split(-2)
+    |> elem(1)
+    |> Enum.product()
+
+    # |> Enum.product()
+
+    # |> parse_monkey_list()
+    # |> Enum.split(-1)
+    # |> elem(0)
+
+    # |> get_counts()
   end
 
   def get_counts(monkey_steps) do
@@ -94,6 +107,15 @@ defmodule AC.Eleven do
 
   def run_single_monkey_step(monkeys, index) do
     IO.puts("monkey #{index}")
+    monkey_idx = elem(monkeys, index)
+    num_items = Enum.count(monkey_idx[:starting_items])
+
+    monkeys =
+      put_elem(
+        monkeys,
+        index,
+        monkey_idx |> Map.update(:num_inspected, num_items, fn x -> x + num_items end)
+      )
 
     Enum.reduce(elem(monkeys, index)[:starting_items], monkeys, fn _x, acc ->
       run_single_monkey_single_item(acc, index)
