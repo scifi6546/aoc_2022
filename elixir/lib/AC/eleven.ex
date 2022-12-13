@@ -55,14 +55,6 @@ defmodule AC.Eleven do
     |> Enum.split(-2)
     |> elem(1)
     |> Enum.product()
-
-    # |> Enum.product()
-
-    # |> parse_monkey_list()
-    # |> Enum.split(-1)
-    # |> elem(0)
-
-    # |> get_counts()
   end
 
   def get_counts(monkey_steps) do
@@ -106,7 +98,6 @@ defmodule AC.Eleven do
   end
 
   def run_single_monkey_step(monkeys, index) do
-    IO.puts("monkey #{index}")
     monkey_idx = elem(monkeys, index)
     num_items = Enum.count(monkey_idx[:starting_items])
 
@@ -126,32 +117,21 @@ defmodule AC.Eleven do
     monkey = elem(monkeys, index)
 
     inspect = hd(monkey[:starting_items])
-    IO.puts("  Monkey inspects an item with a worry level of #{inspect}.")
+
     inspect = run_operation(monkey[:operation], inspect)
-    IO.puts("    Worry level goes to #{inspect}")
+
     inspect = div(inspect, 3)
     cond_res = get_test_result(monkey[:test][:test_cond], inspect)
-
-    if cond_res do
-      IO.puts("    IS divisible by")
-    else
-      IO.puts("    IS not divisible")
-    end
-
-    IO.inspect(monkey[:test])
 
     {new_item_val, throw_to} =
       cond do
         cond_res == true ->
-          IO.puts("true!!!")
           {inspect, monkey[:test][:true_action][:to_monkey]}
 
         cond_res == false ->
-          IO.puts("false!!")
           {inspect, monkey[:test][:false_action][:to_monkey]}
       end
 
-    IO.puts("    Item with worry level #{new_item_val} is thrown to monkey #{throw_to}")
     monkey = Map.update!(monkey, :starting_items, fn items -> tl(items) end)
     monkeys = put_elem(monkeys, index, monkey)
     new_monkey = elem(monkeys, throw_to)
@@ -162,20 +142,9 @@ defmodule AC.Eleven do
 
   # gets if cond is true or false
   defp get_test_result(test_cond, item) do
-    res =
-      cond do
-        test_cond[:test] == :divisible -> rem(item, test_cond[:by]) == 0
-      end
-
-    if res do
-      IO.puts("    #{item} IS divisible by #{test_cond[:by]}")
-    else
-      IO.puts(
-        "    #{item} IS not divisible #{test_cond[:by]}, rem = #{rem(item, test_cond[:by])}"
-      )
+    cond do
+      test_cond[:test] == :divisible -> rem(item, test_cond[:by]) == 0
     end
-
-    res
   end
 
   # runs operation on item and returns new worry level
