@@ -38,23 +38,49 @@ defmodule AC.Eleven do
   end
 
   def test_output_part2 do
-    :better
+    2_713_310_158
   end
 
   def problem1(input) do
-    String.split(input, "\n\n")
-    |> Enum.map(fn mon -> parse_monkey(mon) end)
-    |> List.to_tuple()
-    |> run_n_rounds(20)
-    |> Enum.split(-1)
-    |> elem(1)
-    |> hd()
-    |> Tuple.to_list()
+    parse_monkey_list_from_str(input)
+    |> run_n_rounds(20, fn inspect -> div(inspect, 3) end)
+    |> get_monkey_num()
+  end
+
+  def problem2(input) do
+    parse_monkey_list_from_str(input)
+    |> run_n_rounds(10000, fn x -> x end)
+    |> get_monkey_num()
+  end
+
+  defp get_monkey_num(monkeys) do
+    Tuple.to_list(monkeys)
     |> Enum.map(fn monkey -> monkey[:num_inspected] end)
     |> Enum.sort()
     |> Enum.split(-2)
     |> elem(1)
     |> Enum.product()
+  end
+
+  def reduce_monkey_items(monkeys) do
+    monkey_list = Tuple.to_list(monkeys)
+
+    factor =
+      Enum.map(monkey_list, fn mon -> mon[:test][:test_cond][:by] end)
+      |> Enum.product()
+
+    Enum.map(monkey_list, fn mon ->
+      Map.update!(mon, :starting_items, fn item_list ->
+        Enum.map(item_list, fn item -> rem(item, factor) end)
+      end)
+    end)
+    |> List.to_tuple()
+  end
+
+  def parse_monkey_list_from_str(input) do
+    String.split(input, "\n\n")
+    |> Enum.map(fn mon -> parse_monkey(mon) end)
+    |> List.to_tuple()
   end
 
   def get_counts(monkey_steps) do
@@ -75,29 +101,27 @@ defmodule AC.Eleven do
       Tuple.to_list(mon_step)
       |> Enum.with_index()
       |> Enum.map(fn {step, idx} -> %{monkey_num: idx, items: step[:starting_items]} end)
+      |> Tuple.to_list()
     end)
 
     # |> Enum.with_index()
   end
 
-  def run_n_rounds(monkeys, n) do
-    monkeys_ran =
-      Enum.map_reduce(AC.range(0, n), monkeys, fn _, monkeys ->
-        monkeys = run_round(monkeys)
-        {monkeys, monkeys}
-      end)
-      |> elem(0)
-
-    [monkeys] ++ monkeys_ran
-  end
-
-  def run_round(monkeys) do
-    Enum.reduce(AC.range(0, tuple_size(monkeys)), monkeys, fn index, monkeys ->
-      run_single_monkey_step(monkeys, index)
+  def run_n_rounds(monkeys, n, bored_fn) do
+    Enum.reduce(AC.range(0, n), monkeys, fn _, monkeys ->
+      monkeys = run_round(monkeys, bored_fn)
+      reduce_monkey_items(monkeys)
+      # monkeys
     end)
   end
 
-  def run_single_monkey_step(monkeys, index) do
+  def run_round(monkeys, bored_fn) do
+    Enum.reduce(AC.range(0, tuple_size(monkeys)), monkeys, fn index, monkeys ->
+      run_single_monkey_step(monkeys, index, fn x -> bored_fn.(x) end)
+    end)
+  end
+
+  def run_single_monkey_step(monkeys, index, bored_fn) do
     monkey_idx = elem(monkeys, index)
     num_items = Enum.count(monkey_idx[:starting_items])
 
@@ -109,18 +133,18 @@ defmodule AC.Eleven do
       )
 
     Enum.reduce(elem(monkeys, index)[:starting_items], monkeys, fn _x, acc ->
-      run_single_monkey_single_item(acc, index)
+      run_single_monkey_single_item(acc, index, fn x -> bored_fn.(x) end)
     end)
   end
 
-  def run_single_monkey_single_item(monkeys, index) do
+  def run_single_monkey_single_item(monkeys, index, bored_fn) do
     monkey = elem(monkeys, index)
 
     inspect = hd(monkey[:starting_items])
 
     inspect = run_operation(monkey[:operation], inspect)
 
-    inspect = div(inspect, 3)
+    inspect = bored_fn.(inspect)
     cond_res = get_test_result(monkey[:test][:test_cond], inspect)
 
     {new_item_val, throw_to} =
@@ -240,9 +264,5 @@ defmodule AC.Eleven do
 
   defp parse_monkey_num(str) do
     String.split(str) |> tl() |> hd() |> String.split_at(-1) |> elem(0) |> String.to_integer()
-  end
-
-  def problem2(_input) do
-    :better
   end
 end
