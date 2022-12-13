@@ -9,11 +9,14 @@ defmodule AC.Ten do
     end
 
     def run_instructions(instruction_list) do
-      Enum.flat_map_reduce(instruction_list, default_state(), fn ins, acc ->
-        new_state = run_instruction(acc, ins)
-        {new_state, List.last(new_state)}
-      end)
-      |> elem(0)
+      ins =
+        Enum.flat_map_reduce(instruction_list, default_state(), fn ins, acc ->
+          new_state = run_instruction(acc, ins)
+          {new_state, List.last(new_state)}
+        end)
+        |> elem(0)
+
+      [default_state()] ++ ins
     end
 
     defp parse_instruction(line) do
@@ -208,7 +211,17 @@ defmodule AC.Ten do
 
   @spec test_output_part2 :: :better
   def test_output_part2 do
-    :better
+    o = """
+    ##..##..##..##..##..##..##..##..##..##..
+    ###...###...###...###...###...###...###.
+    ####....####....####....####....####....
+    #####.....#####.....#####.....#####.....
+    ######......######......######......####
+    #######.......#######.......#######.....
+    """
+
+    String.split_at(o, String.length(o) - 1)
+    |> elem(0)
   end
 
   def problem1(input) do
@@ -227,7 +240,33 @@ defmodule AC.Ten do
     end
   end
 
-  def problem2(_input) do
-    :better
+  def problem2(input) do
+    Cpu.parse_instruction_list(input)
+    |> Cpu.run_instructions()
+    |> Enum.map(fn state -> get_state_char(state) end)
+    |> Enum.chunk_every(40)
+    |> Enum.map(fn row -> List.to_string(row) end)
+    |> Enum.filter(fn s -> String.length(s) == 40 end)
+    |> Enum.reduce("", fn x, acc ->
+      if String.length(acc) == 0 do
+        x
+      else
+        acc <> "\n" <> x
+      end
+    end)
+  end
+
+  def get_state_char(state) do
+    in_sprite = run_ins_ray(state)
+
+    cond do
+      in_sprite -> "#"
+      !in_sprite -> "."
+    end
+  end
+
+  def run_ins_ray(ins) do
+    put_pound = (rem(ins[:cycle_num] - 1, 40) - ins[:x_register]) |> abs()
+    put_pound == 0 || put_pound == 1
   end
 end
