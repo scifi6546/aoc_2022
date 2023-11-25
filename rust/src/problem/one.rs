@@ -4,7 +4,9 @@ use std::cmp::max;
 pub const ONE: Problem = Problem {
     number: 1,
     problem_a: a,
+    problem_a_output: None,
     problem_b: b,
+    problem_b_output: None,
 };
 #[derive(Clone, Copy)]
 struct Elf {

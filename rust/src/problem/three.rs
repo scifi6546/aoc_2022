@@ -4,7 +4,9 @@ use std::collections::BTreeSet;
 pub const THREE: Problem = Problem {
     number: 3,
     problem_a: a,
+    problem_a_output: None,
     problem_b: b,
+    problem_b_output: None,
 };
 #[derive(Clone, Debug)]
 struct BackPack {

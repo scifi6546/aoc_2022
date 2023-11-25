@@ -2,7 +2,9 @@ use super::Problem;
 pub const TWO: Problem = Problem {
     number: 2,
     problem_a: a,
+    problem_a_output: None,
     problem_b: b,
+    problem_b_output: None,
 };
 #[derive(Copy, Clone, Debug)]
 enum PlayResult {

@@ -3,7 +3,9 @@ use super::Problem;
 pub const SIX: Problem = Problem {
     number: 6,
     problem_a: a,
+    problem_a_output: None,
     problem_b: b,
+    problem_b_output: None,
 };
 
 fn a(_input: &str) -> String {
