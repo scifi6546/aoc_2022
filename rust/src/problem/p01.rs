@@ -1,7 +1,7 @@
 use super::Problem;
 use std::cmp::max;
 
-pub const ONE: Problem = Problem {
+pub const P_01: Problem = Problem {
     number: 1,
     problem_a: a,
     problem_a_output: None,

@@ -1,6 +1,6 @@
 use super::Problem;
 
-pub const SEVENTEEN: Problem = Problem {
+pub const P_17: Problem = Problem {
     number: 17,
     problem_a: a,
     problem_a_output: None,

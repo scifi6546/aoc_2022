@@ -1,5 +1,5 @@
 use super::Problem;
-pub const TWO: Problem = Problem {
+pub const P_02: Problem = Problem {
     number: 2,
     problem_a: a,
     problem_a_output: None,

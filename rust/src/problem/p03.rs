@@ -1,7 +1,7 @@
 use super::Problem;
 use std::collections::BTreeSet;
 
-pub const THREE: Problem = Problem {
+pub const P_03: Problem = Problem {
     number: 3,
     problem_a: a,
     problem_a_output: None,

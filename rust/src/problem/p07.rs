@@ -1,7 +1,7 @@
 use super::Problem;
 
-pub const NINETEEN: Problem = Problem {
-    number: 19,
+pub const P_07: Problem = Problem {
+    number: 7,
     problem_a: a,
     problem_a_output: None,
     problem_b: b,

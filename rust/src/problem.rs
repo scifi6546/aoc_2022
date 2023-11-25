@@ -1,32 +1,33 @@
-use std::path::PathBuf;
-use std::{fs::File, io::prelude::*, path::Path};
+use std::{fs::File, io::prelude::*, path::PathBuf};
 
-mod one;
+mod p01;
 
-mod eight;
-mod eighteen;
-mod eleven;
-mod fifteen;
-mod five;
-mod four;
-mod fourteen;
-mod nine;
-mod nineteen;
+mod p04;
+mod p05;
+mod p09;
+mod p11;
+mod p14;
+mod p15;
+mod p19;
+
+mod p03;
+mod p06;
+mod p07;
+mod p08;
+mod p10;
+mod p12;
+mod p13;
+
+mod p02;
+mod p16;
+mod p17;
+mod p18;
+mod p20;
 mod p21;
 mod p22;
 mod p23;
 mod p24;
 mod p25;
-mod seven;
-mod seventeen;
-mod six;
-mod sixteen;
-mod ten;
-mod thirteen;
-mod three;
-mod twelve;
-mod twenty;
-mod two;
 
 pub struct Problem {
     number: u32,
@@ -81,26 +82,26 @@ impl ProblemRunner {
     pub fn new() -> Self {
         Self {
             problems: vec![
-                one::ONE,
-                two::TWO,
-                three::THREE,
-                four::FOUR,
-                five::FIVE,
-                six::SIX,
-                seven::SEVEN,
-                eight::EIGHT,
-                nine::NINE,
-                ten::TEN,
-                eleven::ELEVEN,
-                twelve::TWELVE,
-                thirteen::THIRTEEN,
-                fourteen::FOURTEEN,
-                fifteen::FIFTEEN,
-                sixteen::SIXTEEN,
-                seventeen::SEVENTEEN,
-                eighteen::EIGHTEEN,
-                nineteen::NINETEEN,
-                twenty::TWENTY,
+                p01::P_01,
+                p02::P_02,
+                p03::P_03,
+                p04::P_04,
+                p05::P_05,
+                p06::P_06,
+                p07::P_07,
+                p08::P_08,
+                p09::P_09,
+                p10::P_10,
+                p11::P_11,
+                p12::P_12,
+                p13::P_13,
+                p14::P_14,
+                p15::P_15,
+                p16::P_16,
+                p17::P_17,
+                p18::P_18,
+                p19::P_19,
+                p20::P_20,
                 p21::P_21,
                 p22::P_22,
                 p23::P_23,

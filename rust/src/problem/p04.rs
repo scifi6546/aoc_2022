@@ -1,6 +1,6 @@
 use super::Problem;
-use std::cmp::{max, min};
-pub const FOUR: Problem = Problem {
+
+pub const P_04: Problem = Problem {
     number: 4,
     problem_a: a,
     problem_a_output: Some("503"),
