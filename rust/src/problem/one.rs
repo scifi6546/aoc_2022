@@ -28,11 +28,6 @@ fn a(input: &str) -> String {
     format!("{}", elves)
 }
 fn b(input: &str) -> String {
-    let mut top_elves = [
-        Elf { calories: 0 },
-        Elf { calories: 0 },
-        Elf { calories: 0 },
-    ];
     let mut elves = parse_input(input);
     elves.sort_by(|a, b| a.calories.cmp(&b.calories));
     let sum = elves[elves.len() - 1].calories

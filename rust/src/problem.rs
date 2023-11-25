@@ -1,5 +1,7 @@
 use std::{fs::File, io::prelude::*, path::Path};
 mod one;
+mod two;
+
 pub struct Problem {
     number: u32,
     problem_a: fn(&str) -> String,
@@ -33,7 +35,7 @@ pub struct ProblemRunner {
 impl ProblemRunner {
     pub fn new() -> Self {
         Self {
-            problems: vec![one::ONE],
+            problems: vec![one::ONE, two::TWO],
         }
     }
     pub fn run(&self) -> std::io::Result<()> {
