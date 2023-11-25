@@ -128,7 +128,7 @@ fn a(input: &str) -> String {
     total_score.to_string()
 }
 fn b(input: &str) -> String {
-    let score = input
+    input
         .lines()
         .filter(|line| !line.is_empty())
         .filter_map(|line| {
@@ -151,9 +151,8 @@ fn b(input: &str) -> String {
             }
             .get_score()
         })
-        .sum::<u32>();
-    println!("{:#?}", score);
-    score.to_string()
+        .sum::<u32>()
+        .to_string()
 }
 #[cfg(test)]
 mod test {

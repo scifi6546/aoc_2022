@@ -1,5 +1,8 @@
 use std::{fs::File, io::prelude::*, path::Path};
 mod one;
+
+mod four;
+mod three;
 mod two;
 
 pub struct Problem {
@@ -10,6 +13,7 @@ pub struct Problem {
 impl Problem {
     fn run_final(&self) -> std::io::Result<()> {
         let mut input_file = File::open(format!("./input/{}.txt", self.number))?;
+        println!("*********** problem {}", self.number);
         let mut input_data = String::new();
         input_file.read_to_string(&mut input_data)?;
         let problem_a_answer = (self.problem_a)(&input_data);
@@ -19,23 +23,13 @@ impl Problem {
         Ok(())
     }
 }
-trait SubProblem {
-    fn run_str(input: &str) -> String;
-    fn run_path<P: AsRef<Path>>(p: P) -> std::io::Result<String> {
-        let mut file = File::open(p)?;
-        let mut input_data = String::new();
-        file.read_to_string(&mut input_data)?;
-        Self::run_str(&input_data);
-        Ok(Self::run_str(&input_data))
-    }
-}
 pub struct ProblemRunner {
     problems: Vec<Problem>,
 }
 impl ProblemRunner {
     pub fn new() -> Self {
         Self {
-            problems: vec![one::ONE, two::TWO],
+            problems: vec![one::ONE, two::TWO, three::THREE],
         }
     }
     pub fn run(&self) -> std::io::Result<()> {
