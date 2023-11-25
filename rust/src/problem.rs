@@ -4,13 +4,28 @@ use std::{fs::File, io::prelude::*, path::Path};
 mod one;
 
 mod eight;
+mod eighteen;
+mod eleven;
+mod fifteen;
 mod five;
 mod four;
+mod fourteen;
 mod nine;
+mod nineteen;
+mod p21;
+mod p22;
+mod p23;
+mod p24;
+mod p25;
 mod seven;
+mod seventeen;
 mod six;
+mod sixteen;
 mod ten;
+mod thirteen;
 mod three;
+mod twelve;
+mod twenty;
 mod two;
 
 pub struct Problem {
@@ -76,6 +91,21 @@ impl ProblemRunner {
                 eight::EIGHT,
                 nine::NINE,
                 ten::TEN,
+                eleven::ELEVEN,
+                twelve::TWELVE,
+                thirteen::THIRTEEN,
+                fourteen::FOURTEEN,
+                fifteen::FIFTEEN,
+                sixteen::SIXTEEN,
+                seventeen::SEVENTEEN,
+                eighteen::EIGHTEEN,
+                nineteen::NINETEEN,
+                twenty::TWENTY,
+                p21::P_21,
+                p22::P_22,
+                p23::P_23,
+                p24::P_24,
+                p25::P_25,
             ],
         }
     }
