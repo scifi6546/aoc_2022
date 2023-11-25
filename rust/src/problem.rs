@@ -1,7 +1,11 @@
+use std::io::Error;
 use std::{fs::File, io::prelude::*, path::Path};
+
 mod one;
 
+mod five;
 mod four;
+mod six;
 mod three;
 mod two;
 
@@ -29,12 +33,22 @@ pub struct ProblemRunner {
 impl ProblemRunner {
     pub fn new() -> Self {
         Self {
-            problems: vec![one::ONE, two::TWO, three::THREE],
+            problems: vec![
+                one::ONE,
+                two::TWO,
+                three::THREE,
+                four::FOUR,
+                five::FIVE,
+                six::SIX,
+            ],
         }
     }
     pub fn run(&self) -> std::io::Result<()> {
         for problem in self.problems.iter() {
-            problem.run_final()?
+            let result = problem.run_final();
+            if result.is_err() {
+                break;
+            }
         }
         Ok(())
     }
