@@ -1,5 +1,5 @@
 use super::Problem;
-
+use std::collections::BTreeSet;
 pub const P_06: Problem = Problem {
     number: 6,
     problem_a: a,
@@ -9,51 +9,52 @@ pub const P_06: Problem = Problem {
 };
 #[derive(Clone, Debug)]
 struct CharBuffer {
-    chars: [Option<char>; 3],
+    chars: Vec<char>,
+    buffer_length: usize,
 }
 impl CharBuffer {
-    fn new() -> Self {
-        Self { chars: [None; 3] }
+    fn new(buffer_length: usize) -> Self {
+        Self {
+            chars: Vec::new(),
+            buffer_length,
+        }
     }
     fn push(&mut self, c: char) {
-        if self.chars[0].is_none() {
-            self.chars[0] = Some(c)
-        } else if self.chars[1].is_none() {
-            self.chars[1] = Some(c)
-        } else if self.chars[2].is_none() {
-            self.chars[2] = Some(c)
+        if self.chars.len() == self.buffer_length {
+            for i in 1..self.chars.len() {
+                self.chars[i - 1] = self.chars[i];
+            }
+            self.chars[self.buffer_length - 1] = c;
         } else {
-            self.chars[0] = self.chars[1];
-            self.chars[1] = self.chars[2];
-            self.chars[2] = Some(c);
-        };
+            self.chars.push(c);
+        }
     }
-    fn is_unique(&self, c: char) -> bool {
-        if self.chars[0].is_none() || self.chars[1].is_none() || self.chars[2].is_none() {
-            false
+    fn is_unique(&self) -> bool {
+        if self.chars.iter().cloned().collect::<BTreeSet<_>>().len() == self.buffer_length {
+            true
         } else {
-            let c = Some(c);
-            !(self.chars[0] == self.chars[1]
-                || self.chars[0] == self.chars[2]
-                || self.chars[1] == self.chars[2]
-                || c == self.chars[0]
-                || c == self.chars[1]
-                || c == self.chars[2])
+            false
         }
     }
 }
 fn a(input: &str) -> String {
-    let mut buffer = CharBuffer::new();
+    let mut buffer = CharBuffer::new(4);
     for (index, char) in input.chars().filter(|c| c.is_alphabetic()).enumerate() {
-        if buffer.is_unique(char) {
+        buffer.push(char);
+        if buffer.is_unique() {
             return (index + 1).to_string();
         }
-
-        buffer.push(char);
     }
     String::new()
 }
-fn b(_input: &str) -> String {
+fn b(input: &str) -> String {
+    let mut buffer = CharBuffer::new(14);
+    for (index, char) in input.chars().filter(|c| c.is_alphabetic()).enumerate() {
+        buffer.push(char);
+        if buffer.is_unique() {
+            return (index + 1).to_string();
+        }
+    }
     String::new()
 }
 
@@ -75,6 +76,10 @@ mjqjpqmgbljsphdztnvjfqwrcgsmlb
     #[test]
     fn test_b() {
         let r = b(TEST_INPUT);
-        assert_eq!(&r, "");
+        assert_eq!(&r, "19");
+        assert_eq!(b("bvwbjplbgvbhsrlpgdmjqwftvncz"), "23");
+        assert_eq!(b("nppdvjthqldpwncqszvftbrmjlhg"), "23");
+        assert_eq!(b("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"), "29");
+        assert_eq!(b("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"), "26");
     }
 }
