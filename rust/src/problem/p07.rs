@@ -27,6 +27,13 @@ impl FileTreeNode {
             FileTreeNode::File { name, .. } => name,
         }
     }
+    /// gets size of current node
+    fn get_size(&self) -> u32 {
+        match self {
+            FileTreeNode::Directory { size, .. } => size.unwrap(),
+            FileTreeNode::File { size, .. } => *size,
+        }
+    }
     fn populate_directory_size(&mut self) -> u32 {
         match self {
             FileTreeNode::Directory { children, size, .. } => {
@@ -38,6 +45,17 @@ impl FileTreeNode {
                 children_size
             }
             FileTreeNode::File { size, .. } => *size,
+        }
+    }
+    // returns vec of all directory sizes
+    fn get_directory_sizes(&self) -> Vec<u32> {
+        match self {
+            FileTreeNode::Directory { children, size, .. } => children
+                .iter()
+                .flat_map(|(_k, node)| node.get_directory_sizes())
+                .chain(size.clone().into_iter())
+                .collect(),
+            FileTreeNode::File { .. } => Vec::new(),
         }
     }
     fn get_total_size_under_max(&self) -> u32 {
@@ -199,7 +217,44 @@ fn a(input: &str) -> String {
     //println!("file tree: {:#?}", file_tree);
     file_tree.get_total_size_under_max().to_string()
 }
-fn b(_input: &str) -> String {
+fn b(input: &str) -> String {
+    // total size of file system
+    let total_size = 70000000;
+    let needed_size = 30000000;
+    let commands = parse_command(input);
+    let mut file_tree = FileTreeNode::Directory {
+        children: HashMap::new(),
+        name: "".to_string(),
+        size: None,
+    };
+    let mut current_path: Vec<String> = Vec::new();
+    for command in commands.iter() {
+        match command {
+            Command::ChangeDirectory { destination } => {
+                if destination == ".." {
+                    current_path.pop();
+                } else if destination == "." {
+                    continue;
+                } else {
+                    current_path.push(destination.clone())
+                }
+            }
+            Command::List { files } => file_tree.add_directory(&current_path, files.clone()),
+        }
+    }
+    file_tree.populate_directory_size();
+    let used_size = file_tree.get_size();
+    let remove_size = needed_size - (total_size - used_size);
+
+    let mut sizes = file_tree.get_directory_sizes();
+    sizes.sort();
+
+    for s in sizes {
+        if s >= remove_size {
+            return s.to_string();
+        }
+    }
+
     String::new()
 }
 
@@ -241,6 +296,6 @@ $ ls
     #[test]
     fn test_b() {
         let r = b(TEST_INPUT);
-        assert_eq!(&r, "");
+        assert_eq!(&r, "24933642");
     }
 }
