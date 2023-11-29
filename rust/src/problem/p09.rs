@@ -26,6 +26,10 @@ impl Position {
     fn apply_step(&self, head: &Position) -> Self {
         let delta = *head - *self;
         return match delta {
+            Position { x: -2, y: -2 } => Position {
+                x: self.x - 1,
+                y: self.y - 1,
+            },
             Position { x: -2, y: -1 } => Position {
                 x: self.x - 1,
                 y: self.y - 1,
@@ -41,6 +45,10 @@ impl Position {
             Position { x: -1, y: -2 } => Position {
                 x: self.x - 1,
                 y: self.y - 1,
+            },
+            Position { x: -2, y: 2 } => Position {
+                x: self.x - 1,
+                y: self.y + 1,
             },
             Position { x: -1, y: -1 } => *self,
             Position { x: -1, y: 0 } => *self,
@@ -71,6 +79,10 @@ impl Position {
                 x: self.x + 1,
                 y: self.y + 1,
             },
+            Position { x: 2, y: -2 } => Position {
+                x: self.x + 1,
+                y: self.y - 1,
+            },
             Position { x: 2, y: -1 } => Position {
                 x: self.x + 1,
                 y: self.y - 1,
@@ -80,6 +92,10 @@ impl Position {
                 y: self.y,
             },
             Position { x: 2, y: 1 } => Position {
+                x: self.x + 1,
+                y: self.y + 1,
+            },
+            Position { x: 2, y: 2 } => Position {
                 x: self.x + 1,
                 y: self.y + 1,
             },
@@ -103,6 +119,13 @@ impl std::ops::Sub for Position {
     }
 }
 impl Step {
+    fn step_list_from_str(input: &str) -> Vec<Self> {
+        input
+            .lines()
+            .filter(|line| !line.is_empty())
+            .filter_map(|line| Step::from_str(line))
+            .collect()
+    }
     fn from_str(input: &str) -> Option<Self> {
         let input_chars = input.split_whitespace().take(2).collect::<Vec<_>>();
 
@@ -132,11 +155,7 @@ impl Step {
     }
 }
 fn a(input: &str) -> String {
-    let steps = input
-        .lines()
-        .filter(|line| !line.is_empty())
-        .filter_map(|line| Step::from_str(line))
-        .collect::<Vec<_>>();
+    let steps = Step::step_list_from_str(input);
 
     let mut head_position = Position { x: 0, y: 0 };
     let mut tail_position = Position { x: 0, y: 0 };
@@ -169,8 +188,42 @@ fn a(input: &str) -> String {
     }
     visited_position.len().to_string()
 }
-fn b(_input: &str) -> String {
-    String::new()
+fn b(input: &str) -> String {
+    let steps = Step::step_list_from_str(input);
+    let mut head_position = Position { x: 0, y: 0 };
+    let mut tails = vec![Position { x: 0, y: 0 }; 9];
+    let mut visited_position: BTreeSet<Position> = BTreeSet::new();
+    visited_position.insert(tails[8]);
+    for step in steps.iter() {
+        if step.delta_x != 0 {
+            let direction = if step.delta_x.is_positive() { 1 } else { -1 };
+            for _x in 0..step.delta_x.abs() {
+                head_position.x += direction;
+                for i in 0..tails.len() {
+                    let parent = if i != 0 { tails[i - 1] } else { head_position };
+                    tails[i] = tails[i].apply_step(&parent);
+                }
+
+                visited_position.insert(tails[8]);
+            }
+
+            // handle move x
+        } else if step.delta_y != 0 {
+            let direction = if step.delta_y.is_positive() { 1 } else { -1 };
+            for _y in 0..step.delta_y.abs() {
+                head_position.y += direction;
+                for i in 0..tails.len() {
+                    let parent = if i != 0 { tails[i - 1] } else { head_position };
+                    tails[i] = tails[i].apply_step(&parent);
+                }
+
+                visited_position.insert(tails[8]);
+            }
+        } else {
+            panic!("must move")
+        }
+    }
+    visited_position.len().to_string()
 }
 
 #[cfg(test)]
@@ -194,6 +247,21 @@ R 2
     #[test]
     fn test_b() {
         let r = b(TEST_INPUT);
-        assert_eq!(&r, "");
+        assert_eq!(&r, "1");
+    }
+    #[test]
+    fn test_b_long() {
+        let input = r#"
+R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20
+"#;
+        let r = b(input);
+        assert_eq!(&r, "36");
     }
 }
