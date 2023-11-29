@@ -5,8 +5,10 @@ pub const P_05: Problem = Problem {
     number: 5,
     problem_a: a,
     problem_a_output: Some("FWSHSPJWM"),
+    print_problem_a_output: true,
     problem_b: b,
     problem_b_output: Some("PWPWHGFZS"),
+    print_problem_b_output: true,
 };
 #[derive(Clone, Debug)]
 struct Stack {

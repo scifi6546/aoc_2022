@@ -4,8 +4,10 @@ pub const P_07: Problem = Problem {
     number: 7,
     problem_a: a,
     problem_a_output: Some("1232307"),
+    print_problem_a_output: true,
     problem_b: b,
     problem_b_output: Some("7268994"),
+    print_problem_b_output: true,
 };
 #[derive(Clone, Debug)]
 enum FileTreeNode {

@@ -2,9 +2,11 @@ use super::Problem;
 pub const P_02: Problem = Problem {
     number: 2,
     problem_a: a,
-    problem_a_output: None,
+    problem_a_output: Some("11386"),
+    print_problem_a_output: true,
     problem_b: b,
-    problem_b_output: None,
+    problem_b_output: Some("13600"),
+    print_problem_b_output: true,
 };
 #[derive(Copy, Clone, Debug)]
 enum PlayResult {

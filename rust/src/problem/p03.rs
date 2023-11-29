@@ -4,9 +4,11 @@ use std::collections::BTreeSet;
 pub const P_03: Problem = Problem {
     number: 3,
     problem_a: a,
-    problem_a_output: None,
+    problem_a_output: Some("7997"),
+    print_problem_a_output: true,
     problem_b: b,
-    problem_b_output: None,
+    problem_b_output: Some("2545"),
+    print_problem_b_output: true,
 };
 #[derive(Clone, Debug)]
 struct BackPack {

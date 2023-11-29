@@ -4,9 +4,11 @@ use std::cmp::max;
 pub const P_01: Problem = Problem {
     number: 1,
     problem_a: a,
-    problem_a_output: None,
+    print_problem_a_output: true,
+    problem_a_output: Some("72478"),
     problem_b: b,
-    problem_b_output: None,
+    problem_b_output: Some("210367"),
+    print_problem_b_output: true,
 };
 #[derive(Clone, Copy)]
 struct Elf {

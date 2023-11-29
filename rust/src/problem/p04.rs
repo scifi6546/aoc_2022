@@ -3,9 +3,11 @@ use super::Problem;
 pub const P_04: Problem = Problem {
     number: 4,
     problem_a: a,
+    print_problem_a_output: true,
     problem_a_output: Some("503"),
     problem_b: b,
     problem_b_output: Some("827"),
+    print_problem_b_output: true,
 };
 #[derive(Copy, Clone, Debug)]
 struct Range {

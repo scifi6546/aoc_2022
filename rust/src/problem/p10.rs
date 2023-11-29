@@ -4,8 +4,17 @@ pub const P_10: Problem = Problem {
     number: 10,
     problem_a: a,
     problem_a_output: Some("12520"),
+    print_problem_a_output: true,
     problem_b: b,
-    problem_b_output: None,
+    problem_b_output: Some(
+        "####.#..#.###..####.###....##..##..#....
+#....#..#.#..#....#.#..#....#.#..#.#....
+###..####.#..#...#..#..#....#.#....#....
+#....#..#.###...#...###.....#.#.##.#....
+#....#..#.#....#....#....#..#.#..#.#....
+####.#..#.#....####.#.....##...###.####.",
+    ),
+    print_problem_b_output: false,
 };
 #[derive(Clone, Copy, Debug)]
 enum Instruction {
@@ -58,12 +67,15 @@ impl Instruction {
             None
         }
     }
+    fn from_lines(input: &str) -> Vec<Self> {
+        input
+            .lines()
+            .filter_map(|line| Instruction::from_str(line))
+            .collect()
+    }
 }
 fn a(input: &str) -> String {
-    let instructions = input
-        .lines()
-        .filter_map(|line| Instruction::from_str(line))
-        .collect::<Vec<_>>();
+    let instructions = Instruction::from_lines(input);
 
     let mut state = CpuState::new();
     let mut signal_strength_sum = 0;
@@ -78,8 +90,38 @@ fn a(input: &str) -> String {
     }
     signal_strength_sum.to_string()
 }
-fn b(_input: &str) -> String {
-    String::new()
+fn b(input: &str) -> String {
+    let instructions = Instruction::from_lines(input);
+
+    let mut state = CpuState::new();
+    let mut output_state = [false; 40 * 6];
+    output_state[0] = true;
+    for ins in instructions.iter() {
+        let out_state = state.run_instruction(*ins);
+        for state in out_state.iter() {
+            let ray_pos = ((state.cycle_count - 1) % 40) as i32;
+            let cursor_pos = state.register_x;
+            if (ray_pos - cursor_pos).abs() <= 1 {
+                output_state[state.cycle_count as usize - 1] = true;
+            }
+        }
+        state = *out_state.last().unwrap();
+    }
+    output_state
+        .iter()
+        .enumerate()
+        .map(|(i, val)| {
+            match val {
+                true => "#",
+                false => ".",
+            }
+            .to_owned()
+                + if (i + 1) % 40 == 0 { "\n" } else { "" }
+        })
+        .collect::<String>()
+        .strip_suffix("\n")
+        .unwrap()
+        .to_string()
 }
 
 #[cfg(test)]
@@ -241,6 +283,14 @@ noop
     #[test]
     fn test_b() {
         let r = b(TEST_INPUT);
-        assert_eq!(&r, "");
+        assert_eq!(
+            &r,
+            "##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######....."
+        );
     }
 }

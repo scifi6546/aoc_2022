@@ -33,8 +33,10 @@ pub struct Problem {
     number: u32,
     problem_a: fn(&str) -> String,
     problem_a_output: Option<&'static str>,
+    print_problem_a_output: bool,
     problem_b: fn(&str) -> String,
     problem_b_output: Option<&'static str>,
+    print_problem_b_output: bool,
 }
 impl Problem {
     fn get_file_path(&self) -> PathBuf {
@@ -51,19 +53,35 @@ impl Problem {
 
             let problem_b_answer = (self.problem_b)(&input_data);
             if let Some(correct_a_answer) = self.problem_a_output {
-                if problem_a_answer == correct_a_answer {
-                    println!("problem a: {} (Correct!)", problem_a_answer);
+                if self.print_problem_a_output {
+                    if problem_a_answer == correct_a_answer {
+                        println!("problem a: {} (Correct!)", problem_a_answer);
+                    } else {
+                        println!("problem a: {} (NOT CORRECT!)", problem_a_answer);
+                    }
                 } else {
-                    println!("problem a: {} (NOT CORRECT!)", problem_a_answer);
+                    if problem_a_answer == correct_a_answer {
+                        println!("problem a: (Correct!)");
+                    } else {
+                        println!("problem a: (NOT CORRECT!)");
+                    }
                 }
             } else {
                 println!("problem a: {} (N/A)", problem_a_answer);
             }
             if let Some(correct_b_answer) = self.problem_b_output {
-                if problem_b_answer == correct_b_answer {
-                    println!("problem b: {} (Correct!)", problem_b_answer);
+                if self.print_problem_b_output {
+                    if problem_b_answer == correct_b_answer {
+                        println!("problem b: {} (Correct!)", problem_b_answer);
+                    } else {
+                        println!("problem b: {} (NOT CORRECT!)", problem_b_answer);
+                    }
                 } else {
-                    println!("problem b: {} (NOT CORRECT!)", problem_b_answer);
+                    if problem_b_answer == correct_b_answer {
+                        println!("problem b: (Correct!)");
+                    } else {
+                        println!("problem b: (NOT CORRECT!)");
+                    }
                 }
             } else {
                 println!("problem b: {} (N/A)", problem_a_answer);

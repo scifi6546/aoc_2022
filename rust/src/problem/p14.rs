@@ -4,8 +4,10 @@ pub const P_14: Problem = Problem {
     number: 14,
     problem_a: a,
     problem_a_output: None,
+    print_problem_a_output: true,
     problem_b: b,
     problem_b_output: None,
+    print_problem_b_output: true,
 };
 
 fn a(_input: &str) -> String {

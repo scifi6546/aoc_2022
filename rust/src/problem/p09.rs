@@ -9,8 +9,10 @@ pub const P_09: Problem = Problem {
     number: 9,
     problem_a: a,
     problem_a_output: Some("6337"),
+    print_problem_a_output: true,
     problem_b: b,
     problem_b_output: Some("2455"),
+    print_problem_b_output: true,
 };
 #[derive(Clone, Copy, Debug)]
 struct Step {

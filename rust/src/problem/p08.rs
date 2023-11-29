@@ -3,9 +3,11 @@ use std::cmp::max;
 pub const P_08: Problem = Problem {
     number: 8,
     problem_a: a,
+    print_problem_a_output: true,
     problem_a_output: Some("1698"),
     problem_b: b,
     problem_b_output: Some("672280"),
+    print_problem_b_output: true,
 };
 fn make_grid(input: &str) -> Vec<Vec<u32>> {
     input

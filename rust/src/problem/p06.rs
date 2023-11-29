@@ -4,8 +4,10 @@ pub const P_06: Problem = Problem {
     number: 6,
     problem_a: a,
     problem_a_output: Some("1287"),
+    print_problem_a_output: true,
     problem_b: b,
     problem_b_output: Some("3716"),
+    print_problem_b_output: true,
 };
 #[derive(Clone, Debug)]
 struct CharBuffer {
