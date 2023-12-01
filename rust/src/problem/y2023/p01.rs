@@ -7,7 +7,7 @@ pub const P_01: Problem = Problem {
     print_problem_a_output: true,
     problem_a_output: Some("53974"),
     problem_b: b,
-    problem_b_output: None,
+    problem_b_output: Some("52840"),
     print_problem_b_output: true,
 };
 fn a(input: &str) -> String {

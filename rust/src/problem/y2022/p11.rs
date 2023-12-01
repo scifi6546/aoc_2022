@@ -6,7 +6,7 @@ pub const P_11: Problem = Problem {
     problem_a_output: Some("55930"),
     print_problem_a_output: true,
     problem_b: b,
-    problem_b_output: None,
+    problem_b_output: Some("14636993466"),
     print_problem_b_output: true,
 };
 #[derive(Clone, Copy, Debug)]
@@ -57,15 +57,14 @@ impl Value {
         }
     }
 }
+
 #[derive(Clone, Copy, Debug)]
-enum Test {
-    DivisibleBy(ItemType),
+struct Test {
+    divisible_by: ItemType,
 }
 impl Test {
     fn test_item(&self, item: ItemType) -> bool {
-        match self {
-            Test::DivisibleBy(c) => item % c == 0,
-        }
+        item % self.divisible_by == 0
     }
 }
 type ItemType = u128;
@@ -111,7 +110,10 @@ impl Monkey {
 
             let test_line = lines[3].split_whitespace().skip(1).collect::<Vec<_>>();
             let test = match test_line[0] {
-                "divisible" => Test::DivisibleBy(test_line[2].parse().unwrap()),
+                "divisible" => Test {
+                    divisible_by: test_line[2].parse().unwrap(),
+                },
+
                 _ => panic!("invalid test str: {}", test_line[0]),
             };
 
@@ -144,37 +146,51 @@ impl Monkey {
         }
     }
 }
-fn a(input: &str) -> String {
+fn run_turn(monkyes: &mut [Monkey], divide_by: ItemType, mod_by: ItemType) {
+    for i in 0..monkyes.len() {
+        let monkey = &monkyes[i];
+        let monkey_items = monkey
+            .items
+            .iter()
+            .map(|item| {
+                let new_item = monkyes[i].operation.apply(*item) / divide_by;
+                if monkyes[i].test.test_item(new_item) {
+                    (monkey.true_monkey as usize, new_item)
+                } else {
+                    (monkey.false_monkey as usize, new_item)
+                }
+            })
+            .collect::<Vec<_>>();
+        {
+            let mut monkey = &mut monkyes[i];
+            monkey.items.clear();
+            monkey.num_items_inspected += monkey_items.len() as u64;
+        }
+
+        for (monkey_num, item) in monkey_items.iter() {
+            monkyes[*monkey_num].items.push(*item)
+        }
+    }
+    if divide_by == 1 {
+        for mon in monkyes.iter_mut() {
+            for item in mon.items.iter_mut() {
+                *item = *item % mod_by;
+            }
+        }
+    }
+}
+fn run_input(input: &str, num_turns: u32, divide_by: ItemType) -> u64 {
     let mut monkyes = input
         .split("\n\n")
         .filter_map(|string| Monkey::from_str(string))
         .collect::<Vec<_>>();
-
-    for _ in 0..20 {
-        for i in 0..monkyes.len() {
-            let monkey = &monkyes[i];
-            let monkey_items = monkey
-                .items
-                .iter()
-                .map(|item| {
-                    let new_item = monkyes[i].operation.apply(*item) / 3;
-                    if monkyes[i].test.test_item(new_item) {
-                        (monkey.true_monkey as usize, new_item)
-                    } else {
-                        (monkey.false_monkey as usize, new_item)
-                    }
-                })
-                .collect::<Vec<_>>();
-            {
-                let mut monkey = &mut monkyes[i];
-                monkey.items.clear();
-                monkey.num_items_inspected += monkey_items.len() as u64;
-            }
-
-            for (monkey_num, item) in monkey_items.iter() {
-                monkyes[*monkey_num].items.push(*item)
-            }
-        }
+    let mod_by = monkyes
+        .iter()
+        .map(|mon| mon.test.divisible_by)
+        .fold(1, |acc, x| acc * x)
+        * divide_by;
+    for _ in 0..num_turns {
+        run_turn(&mut monkyes, divide_by, mod_by)
     }
     let mut inspected_list = monkyes
         .iter()
@@ -186,10 +202,13 @@ fn a(input: &str) -> String {
         .rev()
         .take(2)
         .fold(1, |acc, x| acc * x)
-        .to_string()
 }
-fn b(_input: &str) -> String {
-    String::new()
+fn a(input: &str) -> String {
+    run_input(input, 20, 3).to_string()
+}
+
+fn b(input: &str) -> String {
+    run_input(input, 10_000, 1).to_string()
 }
 
 #[cfg(test)]
@@ -232,6 +251,6 @@ Monkey 3:
     #[test]
     fn test_b() {
         let r = b(TEST_INPUT);
-        assert_eq!(&r, "");
+        assert_eq!(&r, "2713310158");
     }
 }
