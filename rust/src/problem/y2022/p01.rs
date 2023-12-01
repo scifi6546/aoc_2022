@@ -1,4 +1,4 @@
-use super::Problem;
+use crate::problem::Problem;
 use std::cmp::max;
 
 pub const P_01: Problem = Problem {

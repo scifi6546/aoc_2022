@@ -1,33 +1,6 @@
 use std::{fs::File, io::prelude::*, path::PathBuf};
 
-mod p01;
-
-mod p04;
-mod p05;
-mod p09;
-mod p11;
-mod p14;
-mod p15;
-mod p19;
-
-mod p03;
-mod p06;
-mod p07;
-mod p08;
-mod p10;
-mod p12;
-mod p13;
-
-mod p02;
-mod p16;
-mod p17;
-mod p18;
-mod p20;
-mod p21;
-mod p22;
-mod p23;
-mod p24;
-mod p25;
+mod y2022;
 
 pub struct Problem {
     number: u32,
@@ -84,7 +57,7 @@ impl Problem {
                     }
                 }
             } else {
-                println!("problem b: {} (N/A)", problem_a_answer);
+                println!("problem b: {} (N/A)", problem_b_answer);
             }
         } else {
             println!("*********** problem {}", self.number);
@@ -93,48 +66,59 @@ impl Problem {
         Ok(())
     }
 }
-pub struct ProblemRunner {
+struct Year {
     problems: Vec<Problem>,
+    year: u32,
+}
+pub struct ProblemRunner {
+    years: Vec<Year>,
 }
 impl ProblemRunner {
     pub fn new() -> Self {
         Self {
-            problems: vec![
-                p01::P_01,
-                p02::P_02,
-                p03::P_03,
-                p04::P_04,
-                p05::P_05,
-                p06::P_06,
-                p07::P_07,
-                p08::P_08,
-                p09::P_09,
-                p10::P_10,
-                p11::P_11,
-                p12::P_12,
-                p13::P_13,
-                p14::P_14,
-                p15::P_15,
-                p16::P_16,
-                p17::P_17,
-                p18::P_18,
-                p19::P_19,
-                p20::P_20,
-                p21::P_21,
-                p22::P_22,
-                p23::P_23,
-                p24::P_24,
-                p25::P_25,
-            ],
+            years: vec![Year {
+                problems: vec![
+                    y2022::p01::P_01,
+                    y2022::p02::P_02,
+                    y2022::p03::P_03,
+                    y2022::p04::P_04,
+                    y2022::p05::P_05,
+                    y2022::p06::P_06,
+                    y2022::p07::P_07,
+                    y2022::p08::P_08,
+                    y2022::p09::P_09,
+                    y2022::p10::P_10,
+                    y2022::p11::P_11,
+                    y2022::p12::P_12,
+                    y2022::p13::P_13,
+                    y2022::p14::P_14,
+                    y2022::p15::P_15,
+                    y2022::p16::P_16,
+                    y2022::p17::P_17,
+                    y2022::p18::P_18,
+                    y2022::p19::P_19,
+                    y2022::p20::P_20,
+                    y2022::p21::P_21,
+                    y2022::p22::P_22,
+                    y2022::p23::P_23,
+                    y2022::p24::P_24,
+                    y2022::p25::P_25,
+                ],
+                year: 2022,
+            }],
         }
     }
     pub fn run(&self) -> std::io::Result<()> {
-        for problem in self.problems.iter() {
-            let result = problem.run_final();
-            if result.is_err() {
-                break;
+        for year in self.years.iter() {
+            println!("******** {}", year.year);
+            for problem in year.problems.iter() {
+                let result = problem.run_final();
+                if result.is_err() {
+                    break;
+                }
             }
         }
+
         Ok(())
     }
 }

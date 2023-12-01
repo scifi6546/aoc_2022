@@ -1,0 +1,27 @@
+use super::Problem;
+pub mod p01;
+pub mod p02;
+pub mod p03;
+pub mod p04;
+pub mod p05;
+
+pub mod p06;
+pub mod p07;
+pub mod p08;
+pub mod p09;
+pub mod p10;
+pub mod p11;
+pub mod p12;
+pub mod p13;
+pub mod p14;
+pub mod p15;
+pub mod p16;
+pub mod p17;
+pub mod p18;
+pub mod p19;
+pub mod p20;
+pub mod p21;
+pub mod p22;
+pub mod p23;
+pub mod p24;
+pub mod p25;
