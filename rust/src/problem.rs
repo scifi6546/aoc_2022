@@ -12,13 +12,13 @@ pub struct Problem {
     print_problem_b_output: bool,
 }
 impl Problem {
-    fn get_file_path(&self) -> PathBuf {
-        PathBuf::from(format!("./input/{}.txt", self.number))
+    fn get_file_path(&self, year: u32) -> PathBuf {
+        PathBuf::from(format!("./input/{}/{}.txt", year, self.number))
     }
-    fn run_final(&self) -> std::io::Result<()> {
-        let input_path = self.get_file_path();
+    fn run_final(&self, year: u32) -> std::io::Result<()> {
+        let input_path = self.get_file_path(year);
         if input_path.exists() {
-            let mut input_file = File::open(self.get_file_path())?;
+            let mut input_file = File::open(self.get_file_path(year))?;
             println!("*********** problem {}", self.number);
             let mut input_data = String::new();
             input_file.read_to_string(&mut input_data)?;
@@ -118,7 +118,7 @@ impl ProblemRunner {
         for year in self.years.iter() {
             println!("******** {}", year.year);
             for problem in year.problems.iter() {
-                let result = problem.run_final();
+                let result = problem.run_final(year.year);
                 if result.is_err() {
                     break;
                 }
