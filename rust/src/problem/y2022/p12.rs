@@ -73,7 +73,15 @@ impl Tile {
         }
     }
 }
-fn get_shortest(tiles: Vec<Vec<Tile>>, start_x: isize, start_y: isize) -> Option<u32> {
+fn parse_tiles(input: &str) -> Vec<Vec<Tile>> {
+    input
+        .lines()
+        .map(|line| line.trim())
+        .filter(|l| !l.is_empty())
+        .map(|line| line.chars().map(|c| Tile::from_char(c)).collect::<Vec<_>>())
+        .collect()
+}
+fn get_shortest(tiles: &[Vec<Tile>], start_x: isize, start_y: isize) -> Option<u32> {
     let mut distance = tiles
         .iter()
         .map(|row| {
@@ -89,7 +97,11 @@ fn get_shortest(tiles: Vec<Vec<Tile>>, start_x: isize, start_y: isize) -> Option
         location: (start_x, start_y),
     }));
     loop {
-        let lowest_cost = heap.pop().unwrap().0;
+        let lowest_cost = heap.pop().map(|x| x.0);
+        if lowest_cost.is_none() {
+            return None;
+        }
+        let lowest_cost = lowest_cost.unwrap();
 
         let (lowest_x, lowest_y) = lowest_cost.location;
         let neighbor_tiles = [
@@ -121,12 +133,7 @@ fn get_shortest(tiles: Vec<Vec<Tile>>, start_x: isize, start_y: isize) -> Option
     }
 }
 fn a(input: &str) -> String {
-    let tiles = input
-        .lines()
-        .map(|line| line.trim())
-        .filter(|l| !l.is_empty())
-        .map(|line| line.chars().map(|c| Tile::from_char(c)).collect::<Vec<_>>())
-        .collect::<Vec<_>>();
+    let tiles = parse_tiles(input);
 
     let (start_x, start_y) = tiles
         .iter()
@@ -142,54 +149,26 @@ fn a(input: &str) -> String {
         .flatten()
         .next()
         .unwrap();
-    let mut distance = tiles
+    get_shortest(&tiles, start_x, start_y).unwrap().to_string()
+}
+fn b(input: &str) -> String {
+    let tiles = parse_tiles(input);
+    tiles
         .iter()
-        .map(|row| {
+        .enumerate()
+        .map(|(x, row)| {
             row.iter()
-                .map(|tile| if *tile == Tile::Start { 0 } else { u32::MAX })
+                .enumerate()
+                .filter(|(y, tile)| **tile == Tile::Start || **tile == Tile::Height(0))
+                .map(|(y, _tile)| (x as isize, y as isize))
                 .collect::<Vec<_>>()
         })
-        .collect::<Vec<_>>();
-
-    let mut heap = BinaryHeap::new();
-    heap.push(Reverse(TileCost {
-        distance: 0,
-        location: (start_x, start_y),
-    }));
-    loop {
-        let lowest_cost = heap.pop().unwrap().0;
-
-        let (lowest_x, lowest_y) = lowest_cost.location;
-        let neighbor_tiles = [
-            (lowest_x - 1, lowest_y),
-            (lowest_x + 1, lowest_y),
-            (lowest_x, lowest_y - 1),
-            (lowest_x, lowest_y + 1),
-        ];
-        let lowest_tile = tiles[lowest_x as usize][lowest_y as usize];
-        if lowest_tile == Tile::End {
-            return lowest_cost.distance.to_string();
-        }
-        let neighbor_tiles = neighbor_tiles
-            .iter()
-            .filter(|(x, y)| *x >= 0 && *x < tiles.len() as isize)
-            .filter(|(x, y)| *y >= 0 && *y < tiles[*x as usize].len() as isize)
-            .filter(|(x, y)| lowest_tile.can_get_to(tiles[*x as usize][*y as usize]))
-            .filter(|(x, y)| distance[*x as usize][*y as usize] > lowest_cost.distance + 1)
-            .copied()
-            .collect::<Vec<_>>();
-
-        neighbor_tiles.iter().cloned().for_each(|(tile_x, tile_y)| {
-            heap.push(Reverse(TileCost {
-                distance: lowest_cost.distance + 1,
-                location: (tile_x, tile_y),
-            }));
-            distance[tile_x as usize][tile_y as usize] = lowest_cost.distance + 1;
-        });
-    }
-}
-fn b(_input: &str) -> String {
-    String::new()
+        .filter(|row| !row.is_empty())
+        .flatten()
+        .filter_map(|(start_x, start_y)| get_shortest(&tiles, start_x, start_y))
+        .min()
+        .unwrap()
+        .to_string()
 }
 
 #[cfg(test)]
