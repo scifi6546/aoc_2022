@@ -108,7 +108,7 @@ impl ProblemRunner {
                     year: 2022,
                 },
                 Year {
-                    problems: vec![y2023::p01::P_01],
+                    problems: vec![y2023::p01::P_01, y2023::p02::P_02],
                     year: 2023,
                 },
             ],
