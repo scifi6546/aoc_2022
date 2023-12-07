@@ -5,9 +5,9 @@ pub const P_03: Problem = Problem {
     number: 3,
     problem_a: a,
     print_problem_a_output: true,
-    problem_a_output: None,
+    problem_a_output: Some("525181"),
     problem_b: b,
-    problem_b_output: None,
+    problem_b_output: Some("84289137"),
     print_problem_b_output: true,
 };
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Ord, Eq)]
