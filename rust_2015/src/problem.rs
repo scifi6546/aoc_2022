@@ -54,6 +54,9 @@ fn problem_list() -> Vec<Box<dyn ProblemConcrete>> {
         Box::new(ProblemStruct {
             _problem: p05::P05 {},
         }),
+        Box::new(ProblemStruct {
+            _problem: p06::P06 {},
+        }),
     ]
 }
 pub struct ProblemRunner {
