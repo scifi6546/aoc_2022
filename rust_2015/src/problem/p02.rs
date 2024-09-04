@@ -1,7 +1,7 @@
-use std::cmp::min;
 use super::Problem;
-pub struct P02{}
-impl Problem for P02{
+use std::cmp::min;
+pub struct P02 {}
+impl Problem for P02 {
     fn number() -> u32 {
         2
     }
@@ -9,12 +9,12 @@ impl Problem for P02{
     type AOutput = i32;
     type BOutput = i32;
 
-    fn a(input: &str) -> Self::AOutput {
-        input.split_whitespace().map(|line| a_row(line)).sum()
+    fn a(input: &str) -> Option<Self::AOutput> {
+        Some(input.split_whitespace().map(|line| a_row(line)).sum())
     }
 
-    fn b(input: &str) -> Self::BOutput {
-        input.split_whitespace().map(|line| b_row(line)).sum()
+    fn b(input: &str) -> Option<Self::BOutput> {
+        Some(input.split_whitespace().map(|line| b_row(line)).sum())
     }
 }
 fn b_row(row: &str) -> i32 {
@@ -43,17 +43,17 @@ fn a_row(row: &str) -> i32 {
     (total + min_side) as i32
 }
 #[cfg(test)]
-mod test{
+mod test {
     use super::*;
 
     #[test]
-    fn a(){
-        assert_eq!(P02::a("2x3x4"), 58);
-        assert_eq!(P02::a("1x1x10"), 43);
+    fn a() {
+        assert_eq!(P02::a("2x3x4").unwrap(), 58);
+        assert_eq!(P02::a("1x1x10").unwrap(), 43);
     }
     #[test]
-    fn b(){
-        assert_eq!(P02::b("2x3x4"), 34);
-        assert_eq!(P02::b("1x1x10"), 14);
+    fn b() {
+        assert_eq!(P02::b("2x3x4").unwrap(), 34);
+        assert_eq!(P02::b("1x1x10").unwrap(), 14);
     }
 }
