@@ -6,6 +6,7 @@ mod p03;
 mod p04;
 mod p05;
 mod p06;
+mod p07;
 mod p08;
 mod p09;
 
@@ -57,6 +58,10 @@ fn problem_list() -> Vec<Box<dyn ProblemConcrete>> {
         Box::new(ProblemStruct {
             _problem: p06::P06 {},
         }),
+        Box::new(ProblemStruct{
+            _problem: p07::P07{}
+        }
+        )
     ]
 }
 pub struct ProblemRunner {
