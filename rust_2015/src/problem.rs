@@ -6,6 +6,8 @@ mod p03;
 mod p04;
 mod p05;
 mod p06;
+mod p08;
+mod p09;
 
 pub trait Problem {
     /// problem number
