@@ -1,4 +1,5 @@
-use std::{fs::File, io::Read, time::Instant};
+use std::path::Path;
+use std::{collections::BTreeSet, default::Default, fs::File, io::Read, time::Instant};
 
 mod p01;
 mod p02;
@@ -58,26 +59,73 @@ fn problem_list() -> Vec<Box<dyn ProblemConcrete>> {
         Box::new(ProblemStruct {
             _problem: p06::P06 {},
         }),
-        Box::new(ProblemStruct{
-            _problem: p07::P07{}
-        }
-        )
+        Box::new(ProblemStruct {
+            _problem: p07::P07 {},
+        }),
+        Box::new(ProblemStruct {
+            _problem: p08::P08 {},
+        }),
+        Box::new(ProblemStruct {
+            _problem: p09::P09 {},
+        }),
     ]
 }
+#[derive(Clone, Debug)]
+pub struct ProblemRunnerBuilder {
+    run_problems: String,
+}
+impl ProblemRunnerBuilder {
+    pub fn build(self) -> ProblemRunner {
+        ProblemRunner::build(self)
+    }
+    pub fn run_problems(mut self, run_problems: String) -> Self {
+        self.run_problems = run_problems;
+        self
+    }
+}
+impl Default for ProblemRunnerBuilder {
+    fn default() -> Self {
+        Self {
+            run_problems: "*".to_string(),
+        }
+    }
+}
 pub struct ProblemRunner {
+    run_list: BTreeSet<u32>,
     problems: Vec<Box<dyn ProblemConcrete>>,
 }
 impl ProblemRunner {
-    pub fn new() -> Self {
+    pub fn builder() -> ProblemRunnerBuilder {
+        ProblemRunnerBuilder::default()
+    }
+    fn build(builder: ProblemRunnerBuilder) -> Self {
         let mut problems = problem_list();
         problems.sort_by(|a, b| a.number().cmp(&b.number()));
-        Self { problems }
+        let run_list = if builder.run_problems == "*" {
+            problems.iter().map(|t| t.number()).collect()
+        } else {
+            let problem: u32 = builder
+                .run_problems
+                .parse()
+                .expect("failed to parse problem");
+            let mut set = BTreeSet::new();
+            set.insert(problem);
+            set
+        };
+        Self { problems, run_list }
     }
     pub fn run(&self) {
         for problem in self.problems.iter() {
+            if !self.run_list.contains(&problem.number()) {
+                continue;
+            }
             println!("******* {}", problem.number());
-            let mut file = File::open(format!("./input/{}.txt", problem.number()))
-                .expect("failed to open input for problem");
+            let file_path = Path::new("./input").join(format!("{}.txt", problem.number()));
+            if !file_path.exists() {
+                println!("file does not exist skipping {}", problem.number());
+                continue;
+            }
+            let mut file = File::open(file_path).expect("failed to open input for problem");
             let mut data_string = String::new();
             file.read_to_string(&mut data_string)
                 .expect("failed to read string");

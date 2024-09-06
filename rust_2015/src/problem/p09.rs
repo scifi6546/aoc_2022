@@ -2,7 +2,7 @@ use super::Problem;
 pub struct P09;
 impl Problem for P09 {
     fn number() -> u32 {
-        8
+        9
     }
 
     type AOutput = u32;
